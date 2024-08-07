@@ -36,7 +36,6 @@ class InsertPhotoController extends AbstractController
                     $filename = md5(uniqid()) . '.' . $image->guessExtension();
                     $filePath = $this->getParameter('photos_directory') . '/' . $filename;
                     $image->move($this->getParameter('photos_directory'), $filename);
-
                     $this->messageBus->dispatch(new UploadPhotoMessage($filePath));
                 }
             }

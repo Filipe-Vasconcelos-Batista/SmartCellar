@@ -7,8 +7,8 @@ use GuzzleHttp\Client;
 class ProductLookupService
 {
     private $apiKeyLook;
-    public function __construct(string $apiKeyLook){
-        $this->apiKeyLook = $apiKeyLook;
+    public function __construct(){
+        $this->apiKeyLook = getenv('API_KEY_LOOKUP');
     }
     public function getProduct(string $barcode)
     {
