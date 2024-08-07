@@ -9,5 +9,7 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 COPY . /var/www/html
+RUN chown -R www-data:www-data /var/www/html/public/uploads/photos \
+    && chmod -R 775 /var/www/html/public/uploads/photos
 COPY my-httpd.conf /etc/apache2/sites-available/
 RUN a2enmod rewrite

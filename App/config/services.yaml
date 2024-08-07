@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    api_key: '%env(API_KEY)%'
+    api_key_lookup: '%env(API_KEY_LOOKUP)%'
+    photos_directory: '%kernel.project_dir%/public/uploads/photos'
 
 services:
     # default configuration for services in *this* file
@@ -13,12 +16,17 @@ services:
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
+    App\Services\ApiService:
+        arguments:
+            $apiKey: '%api_key%'
+            $apiKeyLookup: '%api_key_lookup%'
     App\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

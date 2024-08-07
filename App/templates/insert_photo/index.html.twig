@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Capture Webcam Image{% endblock %}
+
+{% block body %}
+
+    {% block form %}
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{form_widget(form) }}
+        <button type="submit" > submit</button>
+    {{form_end(form) }}
+
+    {% endblock %}
+    {%  if productInfo is not empty %}
+    <h2>Product Information</h2>
+    <ul>
+        {%  for product in productInfo %}
+        <li>
+            {{ product.title }}
+            {{ product.category }}
+            {{ product.manufacter }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}
+
