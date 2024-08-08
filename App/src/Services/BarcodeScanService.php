@@ -10,20 +10,40 @@ class BarcodeScanService
 {
     private $apiKey;
     public function __construct(){
-        $this->apiKey = getenv('API_KEY');
+        $this->apiKey = $_ENV['API_KEY'];
         if (!$this->apiKey) {
-            throw new \RuntimeException('API key not set');
-        }else {
-            error_log('API key: ' . $this->apiKey);
+            throw new \RuntimeException('API key not set') ;
         }
     }
     public function getCode(string $filepath){
-        print_r("started barcode scan");
-        $config=Configuration::getDefaultConfiguration()->setApiKey('apiKey',$this->apiKey);
-        $apiInstance=new BarcodeScanAPI(new Client(), $config);
+        $config=Configuration::getDefaultConfiguration()->setApiKey('Apikey',$this->apiKey);
+        $client=new Client();
+        $apiInstance=new BarcodeScanAPI($client, $config);
         try{
-            $result=$apiInstance->barcodeScanImage($filepath);
-            return $result;
+            if (!file_exists($filepath)) {
+                throw new \RuntimeException( $filepath);
+            }
+            $response=$client->post('https://api.cloudmersive.com/barcode/scan/image',[
+                'headers'=>[
+                    'Apikey'=> $this->apiKey,
+                ],
+                'multipart'=> [
+                    [
+                    'name'=>'imageFile',
+                    'contents'=>fopen($filepath, 'r'),
+                    'filename'=>basename($filepath)
+                ]
+                ]
+            ]);
+            $new= json_decode($response->getBody(), true);
+            if (empty($new['RawText'])) {
+                throw new \RuntimeException('No barcode returned');
+            }
+
+                return $new['RawText'];
+
+
+
         }catch (\Exception $exception){
             throw new \RuntimeException('Error during the barcode scan: ' . $exception->getMessage());
         }

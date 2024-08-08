@@ -8,7 +8,7 @@ class ProductLookupService
 {
     private $apiKeyLook;
     public function __construct(){
-        $this->apiKeyLook = getenv('API_KEY_LOOKUP');
+        $this->apiKeyLook = $_ENV['API_KEY_LOOKUP'];
     }
     public function getProduct(string $barcode)
     {

@@ -10,6 +10,7 @@ services:
     environment:
       XDEBUG_MODE: develop,debug
       XDEBUG_CONFIG: remote_host=172.17.0.1
+      REDIS_URL: ${REDIS_URL}
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -24,4 +25,9 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     ports:
       - "3306:3306"
+
+  redis:
+    image: redis:7.0.0
+    ports:
+      - "6379:6379"
 

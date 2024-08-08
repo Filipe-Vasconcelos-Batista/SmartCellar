@@ -14,17 +14,20 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class InsertPhotoController extends AbstractController
 {
     private $messageBus;
+    private $cache;
 
-    public function __construct(MessageBusInterface $messageBus){
+    public function __construct(MessageBusInterface $messageBus, CacheInterface $cache){
         $this->messageBus=$messageBus;
+        $this->cache = $cache;
     }
 
     #[Route('/insert/photo', name: 'app_insert_photo')]
-    public function index(Request $request,SessionInterface $session): Response
+    public function index(Request $request): Response
     {
         $form=$this->createForm(InsertBarcodePhotoType::class);
         $form->handleRequest($request);
@@ -40,11 +43,11 @@ class InsertPhotoController extends AbstractController
                 }
             }
         }
-
-        if($session->has('productInfo')){
-            $productInfo=$session->get('productInfo');
+        $cacheKey = "newProductInfo";
+        $items = $this->cache->getItem($cacheKey);
+        if ($items->isHit()) {
+            $productInfo = $items->get();
         }
-
         return $this->render('insert_photo/index.html.twig', [
             'form' => $form,
             'productInfo'=>$productInfo,
