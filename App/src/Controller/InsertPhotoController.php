@@ -4,24 +4,21 @@ namespace App\Controller;
 
 use App\Form\InsertBarcodePhotoType;
 use App\Message\UploadPhotoMessage;
-use GuzzleHttp\Client;
-use Swagger\Client\Api\BarcodeScanApi;
-use Swagger\Client\Configuration;
+use App\Services\CacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class InsertPhotoController extends AbstractController
 {
-    private $messageBus;
-    private $cache;
+    private MessageBusInterface $messageBus;
+    private CacheService $cache;
 
-    public function __construct(MessageBusInterface $messageBus, CacheInterface $cache){
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache){
         $this->messageBus=$messageBus;
         $this->cache = $cache;
     }
@@ -44,13 +41,11 @@ class InsertPhotoController extends AbstractController
             }
         }
         $cacheKey = "newProductInfo";
-        $items = $this->cache->getItem($cacheKey);
-        if ($items->isHit()) {
-            $productInfo = $items->get();
-        }
+        $items = $this->cache->getCachedProductInfo($cacheKey);
+
         return $this->render('insert_photo/index.html.twig', [
             'form' => $form,
-            'productInfo'=>$productInfo,
+            'productInfo'=>$items,
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Message;
 use App\Services\BarcodeScanService;
+use App\Services\CacheService;
 use App\Services\ProductLookupService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -13,34 +14,26 @@ class MessageHandler
 {
     private $barcodeScanService;
     private $productLookUpService;
-    private $cache;
+    private $cacheService;
 
-    public function __construct(BarcodeScanService $barcodeScan, ProductLookupService $productLookupService, CacheInterface $cache){
+    public function __construct(BarcodeScanService $barcodeScan, ProductLookupService $productLookupService, CacheService $cacheService){
         $this->barcodeScanService=$barcodeScan;
         $this->productLookUpService=$productLookupService;
-        $this->cache = $cache;    }
-    public function __invoke(UploadPhotoMessage $message, )
+        $this->cacheService = $cacheService;    }
+    public function __invoke(UploadPhotoMessage $message )
     {
         error_log("Handler invoked");
         $filepath = $message->getFilepath();
-
         $barcode = $this->barcodeScanService->getCode($filepath);
+        $cacheKey = 'newProductInfo';
         if ($barcode) {
             $newProductInfo = $this->productLookUpService->getProduct($barcode);
-            $cacheKey = "newProductInfo";
-            $items=$this->cache->getItem($cacheKey);
-            if($items->isHit()) {
-               $existingProductInfo=$items->get();
-            }else{
-                $existingProductInfo=[];
+            if ($newProductInfo) {
+                $newProductInfo['barcode']=$barcode;
+                print_r($newProductInfo);
+                $this->cacheService->updateProductInfo($cacheKey, $newProductInfo);
+                return $cacheKey;
             }
-            $existingProductInfo[]=$newProductInfo;
-            $items->set($existingProductInfo);
-            $this->cache->save($items);
-
-
-            return $cacheKey;
-
         }
         return null;
     }
