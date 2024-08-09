@@ -12,12 +12,14 @@ class InsertBarcodePhotoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('photo', FileType::class, [
-            'label' => 'Capture Photo',
             'required' => true,
+            'label'=>false,
             'mapped' => false,
             'multiple'=>true,
             'attr' => [
+                'class'=>'form-control-file btn btn-success',
                 'accept' => 'image/*',
+                'style' => 'display:none;',
             ],
         ]);
     }

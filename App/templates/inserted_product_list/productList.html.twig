@@ -1,0 +1,27 @@
+<div>
+    {%  if productInfo is not empty %}
+        <div class="mb-3">
+            <table class="table table-striped table-bordered">
+                <caption>Your list of products</caption>
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Manufacturer</th>
+                    <th scope="col">Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in productInfo  %}
+                    <tr>
+                        <td>{{ product.title }}</td>
+                        <td>{{ product.category }}</td>
+                        <td>{{ product.manufacturer }}</td>
+                        <td>           X </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endif %}
+</div>

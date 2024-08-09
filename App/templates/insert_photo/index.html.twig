@@ -3,26 +3,51 @@
 {% block title %}Capture Webcam Image{% endblock %}
 
 {% block body %}
+    <div class="container">
+        <div class="container d-flex justify-content-center align-items-center" >
+            <div class="form-group">
+                {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+                <div class="mb-3">
+                    <label for="photo" class="form-label">Barcode photos</label>
+                    {{ form_row(form.photo, {
+                        id: 'photo',
+                    }) }}
+                    <span id="fileName" class="btn btn-secondary btn-lg">No file chosen</span>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success btn-lg" >    Send     </button>
+                </div>
+                {{form_end(form) }}
+            </div>
+        </div>
+        {%  include 'inserted_product_list/productList.html.twig' %}
+    </div>
 
-    {% block form %}
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-    {{form_widget(form) }}
-        <button type="submit" > submit</button>
-    {{form_end(form) }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('photo');
+            const fileName = document.getElementById('fileName');
+            const label = document.querySelector('label[for="photo"]');
 
-    {% endblock %}
-    {%  if productInfo is not empty %}
-    <h2>Product Information</h2>
-    <ul>
-        {%  for product in productInfo %}
-        <li>
-            {{ product.title }}</li>
-            <li>{{ product.category }}</li>
-            <li>{{ product.manufacturer }}
-        </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+            label.addEventListener('click', function() {
+                fileInput.click();
+            });
 
+            fileName.addEventListener('click', function() {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function() {
+                const selectedFiles = fileInput.files;
+                if (selectedFiles.length > 0) {
+                    fileName.textContent = selectedFiles.length > 1 ? selectedFiles.length + ' files selected' : selectedFiles[0].name;
+                    fileName.className = 'btn btn-success btn-lg';
+                } else {
+                    fileName.textContent = 'No file chosen';
+                    fileName.className = 'btn btn-secondary btn-lg';
+                }
+            });
+        });
+    </script>
 {% endblock %}
 
