@@ -8,7 +8,7 @@ use GuzzleHttp\Client;
 
 class BarcodeScanService
 {
-    private $apiKey;
+    private String $apiKey;
     public function __construct(){
         $this->apiKey = $_ENV['API_KEY'];
         if (!$this->apiKey) {

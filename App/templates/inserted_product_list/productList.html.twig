@@ -5,19 +5,21 @@
                 <caption>Your list of products</caption>
                 <thead>
                 <tr>
+                    <th scope="col">Barcode</th>
                     <th scope="col">Name</th>
                     <th scope="col">Category</th>
                     <th scope="col">Manufacturer</th>
+                    <th scope="col">Quantity</th>
                     <th scope="col">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for product in productInfo  %}
                     <tr>
+                        <td>{{ product.barcode }}</td>
                         <td>{{ product.title }}</td>
                         <td>{{ product.category }}</td>
                         <td>{{ product.manufacturer }}</td>
-                        <td>{{ product.barcode }}</td>
                         <td>{{ product.quantity }}</td>
                         <td>           X </td>
                     </tr>

@@ -18,6 +18,7 @@ class CacheService
     }
     public function saveProductInfo(string $cacheKey,array $productInfo):void{
         $items=$this->cache->getItem($cacheKey);
+        $items->expiresAfter(3600);
         $items->set($productInfo);
         $this->cache->save($items);
     }

@@ -12,9 +12,9 @@ use Symfony\Contracts\Cache\CacheInterface;
 #[AsMessageHandler]
 class MessageHandler
 {
-    private $barcodeScanService;
-    private $productLookUpService;
-    private $cacheService;
+    private BarcodeScanService $barcodeScanService;
+    private ProductLookupService $productLookUpService;
+    private CacheService $cacheService;
 
     public function __construct(BarcodeScanService $barcodeScan, ProductLookupService $productLookupService, CacheService $cacheService){
         $this->barcodeScanService=$barcodeScan;
@@ -30,7 +30,6 @@ class MessageHandler
             $newProductInfo = $this->productLookUpService->getProduct($barcode);
             if ($newProductInfo) {
                 $newProductInfo['barcode']=$barcode;
-                print_r($newProductInfo);
                 $this->cacheService->updateProductInfo($cacheKey, $newProductInfo);
                 return $cacheKey;
             }
