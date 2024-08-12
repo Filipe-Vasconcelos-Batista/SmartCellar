@@ -21,7 +21,11 @@
                         <td>{{ product.category }}</td>
                         <td>{{ product.manufacturer }}</td>
                         <td>{{ product.quantity }}</td>
-                        <td>           X </td>
+                        <td>
+                            <form action="{{ path('app_delete_entry',{'barcode': product.barcode}) }}" method="post">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

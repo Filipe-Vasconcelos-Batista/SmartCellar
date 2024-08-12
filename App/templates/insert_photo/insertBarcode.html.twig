@@ -6,9 +6,9 @@
 <div class="container">
     <div class="container d-flex justify-content-center align-items-center" >
         <div class="form-group">
-            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            {{ form_start(form) }}
             <div class="mb-3">
-                <label for="photo" class="form-label">Barcode</label>
+                <label for="barcode" class="form-label">Barcode</label>
                 {{ form_row(form.barcode, {
                     id: 'barcode',
                     required: true,
@@ -17,7 +17,8 @@
             <div class="mb-3">
                 <button type="submit" class="btn btn-success btn-lg" >    Make     </button>
             </div>
-            {{form_end(form) }}
+            {{ form_end(form) }}
+
         </div>
     </div>
     {%  include 'inserted_product_list/productList.html.twig' %}

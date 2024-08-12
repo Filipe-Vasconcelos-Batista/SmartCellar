@@ -2,22 +2,23 @@
 
 namespace App\Form;
 
+use App\Entity\Storage;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InsertBarcodeType extends AbstractType
+class StorageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('barcode',TextType::class,[
-                'label'=>false,
-                'mapped' => false,
-                'attr' => [
-                    'class'=>'form-control',
-                    ]
+            ->add('name')
+            ->add('userId', EntityType::class, [
+                'class' => User::class,
+'choice_label' => 'id',
+'multiple' => true,
             ])
         ;
     }
@@ -25,7 +26,7 @@ class InsertBarcodeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+            'data_class' => Storage::class,
         ]);
     }
 }

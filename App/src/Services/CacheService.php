@@ -41,12 +41,23 @@ class CacheService
         $this->saveProductInfo($cachekey, $existingProductInfo);
     }
 
-    public function clearCache(string $cacheKey = null): void
+    public function clearCache(): void
     {
-        if ($cacheKey) {
-            $this->cache->deleteItem($cacheKey);
-        } else {
-            $this->cache->clear();
-        }
+        $this->cache->clear();
     }
+    public function deleteProductInfo(string $cacheKey, string $barcode): void
+    {
+        $existingProductInfo = $this->getCachedProductInfo($cacheKey);
+        $updatedProductInfo = [];
+
+        foreach ($existingProductInfo as $product) {
+            if (isset($product['barcode']) && $product['barcode'] === $barcode) {
+                continue;
+            }
+            $updatedProductInfo[] = $product;
+        }
+
+        $this->saveProductInfo($cacheKey, $updatedProductInfo);
+    }
+
 }

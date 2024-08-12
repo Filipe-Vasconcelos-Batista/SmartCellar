@@ -3,16 +3,18 @@
 namespace App\Controller;
 
 use App\Form\InsertBarcodeType;
+use App\Form\InsertPhotoType;
+use App\Message\BarcodeLookupMessage;
 use App\Message\UploadPhotoMessage;
 use App\Services\CacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
-class InsertBarcodeController extends AbstractController
+class InsertController extends AbstractController
 {
     private MessageBusInterface $messageBus;
     private CacheService $cache;
@@ -23,9 +25,10 @@ class InsertBarcodeController extends AbstractController
     }
 
     #[Route('/insert/photo', name: 'app_insert_photo')]
-    public function index(Request $request): Response
+    public function index(Request $request,SessionInterface $session): Response
     {
-        $form=$this->createForm(InsertBarcodeType::class);
+        $session->set('last_accessed_url', $this->generateUrl('app_insert_photo'));
+        $form=$this->createForm(InsertPhotoType::class);
         $form->handleRequest($request);
         $items=null;
         if ($form->isSubmitted() && $form->isValid()) {
@@ -36,6 +39,7 @@ class InsertBarcodeController extends AbstractController
                     $filePath = $this->getParameter('photos_directory') . '/' . $filename;
                     $image->move($this->getParameter('photos_directory'), $filename);
                     $this->messageBus->dispatch(new UploadPhotoMessage($filePath));
+                    $this->addFlash('success','Photo submitted and processing started.');
                 }
             }
         }
@@ -47,12 +51,21 @@ class InsertBarcodeController extends AbstractController
         ]);
     }
     #[Route('/insert/barcode', name: 'app_insert_barcode')]
-    public function insertBarcode(Request $request): Response
+    public function insertBarcode(Request $request,SessionInterface $session): Response
     {
+        $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode'));
         $form=$this->createForm(InsertBarcodeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dump("uploaded");
+            $barcode=(string) $form->get('barcode')->getData();
+            error_log("Barcode retrieved: " . $barcode);
+            if (empty($barcode) || trim($barcode) === ''){
+                $this->addFlash('error','Barcode is empty.');
+            }
+            else {
+                $this->messageBus->dispatch(new BarcodeLookupMessage($barcode));
+                $this->addFlash('success', 'Barcode submitted and processing started.');
+            }
         }
         $items = $this->cache->getCachedProductInfo("newProductInfo");
 
@@ -60,25 +73,5 @@ class InsertBarcodeController extends AbstractController
             'form' => $form,
             'productInfo'=>$items,
         ]);
-    }
-
-
-
-    public function upload(Request $request): JsonResponse{
-
-        $files=$request->files->get('photo');
-        if($files){
-            foreach ($files as $file) {
-                print_r("it uploads");
-                $filename=md5(uniqid()).'.'.$file->guessExtension();
-                $filePath=$this->getParameter('photos_directory').'/'.$filename;
-                $file->move($this->getParameter('photos_directory'),$filename);
-
-                $this->messageBus->dispatch(new UploadPhotoMessage($filePath));
-
-            }
-            return new JsonResponse(['status'=>'success']);
-        }
-        return new JsonResponse(['status'=>'error']);
     }
 }
