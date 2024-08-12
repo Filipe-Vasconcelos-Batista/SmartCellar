@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Storage{% endblock %}
+
+{% block body %}
+    <h1>Your Storages</h1>
+    <ul>
+        {% for storage in storages %}
+        <li>{{ storage.name }}</li>
+        {% else %}
+        <li>No Storages Found</li>
+    </ul>
+    <button class="btn btn-success" type="button">Create a new Storage</button>
+{% endblock %}
