@@ -38,9 +38,10 @@ class StorageController extends AbstractController
          $user=$security->getUser();
          if ($user instanceof User) {
              $storage->addUserId($user);
+             $storage->setName($form->get('name')->getData());
              $entityManager->persist($storage);
              $entityManager->flush();
-             return $this->redirectToRoute('app_create_storage');
+             return $this->redirectToRoute('app_user_storages');
          }else{
              throw new \LogicException('The user is not of the expected type.');
          }
@@ -50,10 +51,10 @@ class StorageController extends AbstractController
         ]);
     }
     #[Route('/user/storage/{id}', name: 'app_storage_products')]
-    public function showProducts(Integer $id, EntityManagerInterface $entityManager): Response
+    public function showProducts( $id, EntityManagerInterface $entityManager): Response
     {
         $storage= $entityManager->getRepository(Storage::class)->find($id);
-        $products=$storage->getProducts();
+        $products=$storage->getStorageItems();
 
         return $this->render('storage/individualstorage.html.twig', [
             'storage' => $storage,
