@@ -5,24 +5,21 @@
 {% block body %}
     <h1>Your Storages</h1>
     {% if(storages) %}
+        <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+        <li class="breadcrumb-item">
         {% for storage in storages %}
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item active" aria-current="page">
-                        <a href="{{ path('app_storage_products', {'id':storage.id}) }}" data-turbo-frame="products-frame">{{ storage.name }}</a>
-                    </li>
-                </ol>
-            </nav>
+            <a href="{{ path('app_storage_products', {'id':storage.id}) }}" data-turbo-frame="products-frame">{{ storage.name }} /</a>
         {% endfor %}
-        <turbo-frame id="products-frame">
-            <p>Select a storage to view its products.</p>
-        </turbo-frame>
+        </li>
+        </ol>
+        </nav>
     {% else %}
         <h1>No Storages Found</h1>
     {% endif %}
     <a href="{{ path('app_storage_create') }}"><button class="btn btn-success" type="button">Create a new Storage</button></a>
+        <p>Select a storage to view its products.</p>
 
-
-
+    {%  include 'inserted_product_list/productList.html.twig' %}
 
 {% endblock %}
