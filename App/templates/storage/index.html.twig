@@ -3,8 +3,25 @@
 {% block title %}Create Storage{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-success" type="submit">Submit</button>
-    {{ form_end(form) }}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Create Storage</div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                            <div class="mb-3">
+                                <label for="storage" class="form-label">Name</label>
+                                {{ form_widget(form,{
+                                    id: 'storage',
+                                    required: true,
+                                }) }}
+                            </div>
+                        <button class="btn btn-success" type="submit">Submit</button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

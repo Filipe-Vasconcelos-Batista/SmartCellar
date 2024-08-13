@@ -6,6 +6,7 @@ use App\Entity\Storage;
 use App\Entity\User;
 use App\Form\StorageType;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,4 +49,17 @@ class StorageController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/user/storage/{id}', name: 'app_storage_products')]
+    public function showProducts(Integer $id, EntityManagerInterface $entityManager): Response
+    {
+        $storage= $entityManager->getRepository(Storage::class)->find($id);
+        $products=$storage->getProducts();
+
+        return $this->render('storage/individualstorage.html.twig', [
+            'storage' => $storage,
+            'products' => $products,
+        ]);
+    }
+
+
 }

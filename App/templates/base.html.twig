@@ -16,11 +16,12 @@
                     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
                     crossorigin="anonymous"></script>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.min.js"></script>
+
 
         {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}
+        <script src="{{ asset('build/app.js') }}"></script>
     </body>
 </html>
