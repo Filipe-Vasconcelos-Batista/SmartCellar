@@ -14,11 +14,11 @@ class DeleteController extends AbstractController
     public function __construct(CacheService $cacheService){
         $this->cacheService = $cacheService;
     }
-    #[Route('/delete/entry/{barcode}', name: 'app_delete_entry')]
-    public function deleteEntry(string $barcode,SessionInterface $session): Response
+    #[Route('/delete/entry/{id}/{barcode}', name: 'app_delete_entry')]
+    public function deleteEntry(string $barcode,SessionInterface $session,$id): Response
     {
-        $this->cacheService->deleteProductInfo('newProductInfo', $barcode);
-        $lastAccessedUrl = $session->get('last_accessed_url', $this->generateUrl('app_insert_barcode'));
+        $this->cacheService->deleteProductInfo($id, $barcode);
+        $lastAccessedUrl = $session->get('last_accessed_url');
 
         return $this->redirect($lastAccessedUrl);
     }

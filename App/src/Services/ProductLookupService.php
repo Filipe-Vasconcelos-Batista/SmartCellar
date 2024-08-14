@@ -14,14 +14,22 @@ class ProductLookupService
     {
         $url="https://api.barcodelookup.com/v3/products?barcode=$barcode&formatted=y&key=$this->apiKeyLook";
         $client=new Client();
-        $response=$client->get($url);
+        try {
+            $response = $client->get($url);
 
-        $data=json_decode($response->getBody(),true);
-        return [
-            'title' => $data['products'][0]['title'],
-            'category' => $data['products'][0]['category'],
-            'manufacturer' => $data['products'][0]['manufacturer'],
-        ];
+            $data = json_decode($response->getBody(), true);
+            return [
+                'title' => $data['products'][0]['title'],
+                'category' => $data['products'][0]['category'],
+                'manufacturer' => $data['products'][0]['manufacturer'],
+            ];
+        }catch (\Exception $e){
+            return [
+                'title' => "",
+                'category' => "",
+                'manufacturer' => "",
+            ];
+        }
     }
 
 }

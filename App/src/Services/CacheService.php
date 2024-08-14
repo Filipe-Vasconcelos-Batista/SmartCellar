@@ -17,14 +17,16 @@ class CacheService
         return $items->isHit()?$items->get():[];
     }
     public function saveProductInfo(string $cacheKey,array $productInfo):void{
+        error_log("Saving product info to cache with key: $cacheKey");
+        error_log("Product info: " . json_encode($productInfo));
         $items=$this->cache->getItem($cacheKey);
         $items->expiresAfter(3600);
         $items->set($productInfo);
         $this->cache->save($items);
     }
-    public function updateProductInfo(string $cachekey, array $newProductInfo):void
+    public function updateProductInfo(string $cacheKey, array $newProductInfo):void
     {
-        $existingProductInfo = $this->getCachedProductInfo($cachekey);
+        $existingProductInfo = $this->getCachedProductInfo("storage" . $cacheKey);
         $barcode=$newProductInfo['barcode'];
         $found = false;
         foreach($existingProductInfo as &$product) {
@@ -38,7 +40,8 @@ class CacheService
             $newProductInfo['quantity'] = 1;
             $existingProductInfo[] = $newProductInfo;
         }
-        $this->saveProductInfo($cachekey, $existingProductInfo);
+        $newCacheKey='storage' . $cacheKey;
+        $this->saveProductInfo($newCacheKey, $existingProductInfo);
     }
 
     public function clearCache(): void
@@ -47,7 +50,7 @@ class CacheService
     }
     public function deleteProductInfo(string $cacheKey, string $barcode): void
     {
-        $existingProductInfo = $this->getCachedProductInfo($cacheKey);
+        $existingProductInfo = $this->getCachedProductInfo("storage". $cacheKey);
         $updatedProductInfo = [];
 
         foreach ($existingProductInfo as $product) {

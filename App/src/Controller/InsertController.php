@@ -8,6 +8,7 @@ use App\Message\BarcodeLookupMessage;
 use App\Message\UploadPhotoMessage;
 use App\Services\CacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -19,15 +20,16 @@ class InsertController extends AbstractController
     private MessageBusInterface $messageBus;
     private CacheService $cache;
 
-    public function __construct(MessageBusInterface $messageBus, CacheService $cache){
+
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache, Security $security){
         $this->messageBus=$messageBus;
         $this->cache = $cache;
     }
 
     #[Route('/insert/photo/{id}', name: 'app_insert_photo')]
-    public function index(Request $request,SessionInterface $session): Response
+    public function index(Request $request,SessionInterface $session ,$id): Response
     {
-        $session->set('last_accessed_url', $this->generateUrl('app_insert_photo'));
+        $session->set('last_accessed_url', $this->generateUrl('app_insert_photo',['id' => $id]));
         $form=$this->createForm(InsertPhotoType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -37,22 +39,22 @@ class InsertController extends AbstractController
                     $filename = md5(uniqid()) . '.' . $image->guessExtension();
                     $filePath = $this->getParameter('photos_directory') . '/' . $filename;
                     $image->move($this->getParameter('photos_directory'), $filename);
-                    $this->messageBus->dispatch(new UploadPhotoMessage($filePath));
+                    $this->messageBus->dispatch(new UploadPhotoMessage($filePath,$id));
                     $this->addFlash('success','Photo submitted and processing started.');
                 }
             }
         }
-        $cacheKey = "newProductInfo";
-        $items = $this->cache->getCachedProductInfo($cacheKey);
+        $items = $this->cache->getCachedProductInfo("storage" . $id);
         return $this->render('insert_photo/index.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
+            'id'=>$id,
         ]);
     }
     #[Route('/insert/barcode/{id}', name: 'app_insert_barcode')]
-    public function insertBarcode(Request $request,SessionInterface $session): Response
+    public function insertBarcode(Request $request,SessionInterface $session, $id): Response
     {
-        $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode'));
+        $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode',['id' => $id]));
         $form=$this->createForm(InsertBarcodeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -62,15 +64,15 @@ class InsertController extends AbstractController
                 $this->addFlash('error','Barcode is empty.');
             }
             else {
-                $this->messageBus->dispatch(new BarcodeLookupMessage($barcode));
+                $this->messageBus->dispatch(new BarcodeLookupMessage($barcode,$id));
                 $this->addFlash('success', 'Barcode submitted and processing started.');
             }
         }
-        $items = $this->cache->getCachedProductInfo("newProductInfo");
-
+        $items = $this->cache->getCachedProductInfo("storage" . $id);
         return $this->render('insert_photo/insertBarcode.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
+            'id'=>$id,
         ]);
     }
 }

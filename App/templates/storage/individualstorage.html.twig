@@ -3,8 +3,10 @@
 {% block title %}{{ storage.name }}{% endblock %}
 {% block body %}
     <h1>{{ storage.name }}</h1>
+<a href="{{ path('app_insert_photo', {'id': storage.id|e}) }}" class="btn btn-success">add photo</a>
 
-    <button>Working?</button>
+
+<h1>{{ storage.id }}</h1>
 <div>
     {%  if products is not empty %}
         <div class="mb-3">

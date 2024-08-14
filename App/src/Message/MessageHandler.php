@@ -5,7 +5,6 @@ use App\Services\BarcodeScanService;
 use App\Services\CacheService;
 use App\Services\ProductLookupService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Contracts\Cache\CacheInterface;
 
 
 
@@ -22,14 +21,16 @@ class MessageHandler
         $this->cacheService = $cacheService;    }
     public function __invoke(UploadPhotoMessage $message )
     {
+        echo "Handler invoked\n";
         error_log("Handler invoked");
         $filepath = $message->getFilepath();
         $barcode = $this->barcodeScanService->getCode($filepath);
-        $cacheKey = 'newProductInfo';
+        $cacheKey = $message->getId();
         if ($barcode) {
             $newProductInfo = $this->productLookUpService->getProduct($barcode);
             if ($newProductInfo) {
                 $newProductInfo['barcode']=$barcode;
+                var_dump($newProductInfo, $cacheKey);
                 $this->cacheService->updateProductInfo($cacheKey, $newProductInfo);
                 return $cacheKey;
             }

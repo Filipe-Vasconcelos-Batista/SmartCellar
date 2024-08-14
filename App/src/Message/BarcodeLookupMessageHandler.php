@@ -21,9 +21,10 @@ class BarcodeLookupMessageHandler
         error_log("Handler invoked");
         $barcode =$barcodeLookupMessage->getBarcode();
         $productInfo=$this->productLookupService->getProduct($barcode);
+        $cacheKey = $barcodeLookupMessage->getId();
         if($productInfo){
             $productInfo['barcode']=$barcode;
-            $this->cacheService->updateProductInfo('newProductInfo',$productInfo);
+            $this->cacheService->updateProductInfo($cacheKey,$productInfo);
         }
     }
 }
