@@ -24,13 +24,12 @@ class InsertController extends AbstractController
         $this->cache = $cache;
     }
 
-    #[Route('/insert/photo', name: 'app_insert_photo')]
+    #[Route('/insert/photo/{id}', name: 'app_insert_photo')]
     public function index(Request $request,SessionInterface $session): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_photo'));
         $form=$this->createForm(InsertPhotoType::class);
         $form->handleRequest($request);
-        $items=null;
         if ($form->isSubmitted() && $form->isValid()) {
             $imageData = $form->get('photo')->getData();
             if ($imageData) {
@@ -50,7 +49,7 @@ class InsertController extends AbstractController
             'productInfo'=>$items,
         ]);
     }
-    #[Route('/insert/barcode', name: 'app_insert_barcode')]
+    #[Route('/insert/barcode/{id}', name: 'app_insert_barcode')]
     public function insertBarcode(Request $request,SessionInterface $session): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode'));

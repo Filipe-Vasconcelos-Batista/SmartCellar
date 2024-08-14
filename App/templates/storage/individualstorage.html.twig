@@ -1,9 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ storage.name }}{% endblock %}
-
 {% block body %}
     <h1>{{ storage.name }}</h1>
+
+    <button>Working?</button>
 <div>
     {%  if products is not empty %}
         <div class="mb-3">

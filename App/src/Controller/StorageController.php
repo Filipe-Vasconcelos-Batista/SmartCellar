@@ -16,17 +16,28 @@ use Symfony\Component\Routing\Attribute\Route;
 class StorageController extends AbstractController
 {
 
-    #[Route('/user/storages', name: 'app_user_storages')]
-    public function index(Security $security): Response
+    #[Route('/user/storage/{id?}', name: 'app_user_storages')]
+    public function index(Security $security, $id=null, EntityManagerInterface $entityManager ): Response
     {
         $user=$security->getUser();
-        if(!$user instanceof User){
-            throw new\LogicException('The User is not of the expected type');
-        }
         $storages=$user->getStorages();
-        return $this->render('storage/storages.html.twig', [
-            'storages' => $storages,
-        ]);
+        $storage=null;
+        $products=null;
+        if($id){
+            $storage = $entityManager->getRepository(Storage::class)->find($id);
+            if(!$storage){
+                throw $this->createNotFoundException('Storage not found');
+            }
+            if (!$storage->getUserId()->contains($user)) {
+                return $this->redirectToRoute('app_user_storages');
+            }
+            $products=$storage->getStorageItems();
+        }
+            return $this->render('storage/storages.html.twig', [
+                'storages' => $storages,
+                'storage' => $storage,
+                'products' => $products,
+            ]);
     }
     #[Route('/storage/create', name: 'app_storage_create')]
     public function createStorage(Request $request, EntityManagerInterface $entityManager, Security $security): Response
@@ -50,17 +61,17 @@ class StorageController extends AbstractController
             'form' => $form,
         ]);
     }
-    #[Route('/user/storage/{id}', name: 'app_storage_products')]
-    public function showProducts( $id, EntityManagerInterface $entityManager): Response
-    {
-        $storage= $entityManager->getRepository(Storage::class)->find($id);
-        $products=$storage->getStorageItems();
+    public function loadStorage($id, EntityManagerInterface $entityManager, Storage $storage): Response{
 
+        $storage = $entityManager->getRepository(Storage::class)->find($id);
+        if(!$storage){
+            throw $this->createNotFoundException('Storage not found');
+        }
+        $products=$storage->getStorageItems();
         return $this->render('storage/individualstorage.html.twig', [
+            'storages' => $storages,
             'storage' => $storage,
             'products' => $products,
         ]);
     }
-
-
 }
