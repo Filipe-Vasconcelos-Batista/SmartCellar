@@ -8,17 +8,22 @@ class CacheService
 {
     private CacheInterface $cache;
 
+
     public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
     }
+
+    private function getPrefixedCacheKey(string $cacheKey): string
+    {
+        return 'storage' . $cacheKey;
+    }
+
     public function getCachedProductInfo(string $cacheKey):array{
         $items=$this->cache->getItem($cacheKey);
         return $items->isHit()?$items->get():[];
     }
     public function saveProductInfo(string $cacheKey,array $productInfo):void{
-        error_log("Saving product info to cache with key: $cacheKey");
-        error_log("Product info: " . json_encode($productInfo));
         $items=$this->cache->getItem($cacheKey);
         $items->expiresAfter(3600);
         $items->set($productInfo);
@@ -26,7 +31,7 @@ class CacheService
     }
     public function updateProductInfo(string $cacheKey, array $newProductInfo):void
     {
-        $existingProductInfo = $this->getCachedProductInfo("storage" . $cacheKey);
+        $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $barcode=$newProductInfo['barcode'];
         $found = false;
         foreach($existingProductInfo as &$product) {
@@ -40,8 +45,7 @@ class CacheService
             $newProductInfo['quantity'] = 1;
             $existingProductInfo[] = $newProductInfo;
         }
-        $newCacheKey='storage' . $cacheKey;
-        $this->saveProductInfo($newCacheKey, $existingProductInfo);
+        $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
     }
 
     public function clearCache(): void
@@ -50,7 +54,7 @@ class CacheService
     }
     public function deleteProductInfo(string $cacheKey, string $barcode): void
     {
-        $existingProductInfo = $this->getCachedProductInfo("storage". $cacheKey);
+        $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $updatedProductInfo = [];
 
         foreach ($existingProductInfo as $product) {
@@ -60,7 +64,7 @@ class CacheService
             $updatedProductInfo[] = $product;
         }
 
-        $this->saveProductInfo($cacheKey, $updatedProductInfo);
+        $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $updatedProductInfo);
     }
 
 }

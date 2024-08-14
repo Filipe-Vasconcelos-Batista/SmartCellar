@@ -22,7 +22,7 @@
                         <td>{{ product.manufacturer }}</td>
                         <td>{{ product.quantity }}</td>
                         <td>
-                            <form action="{{ path('app_delete_entry',{'barcode': product.barcode,'id':id}) }}" method="post">
+                            <form action="{{ path('app_delete_entry',{'barcode': product.barcode,'id':id.id}) }}" method="post">
                                 <button type="submit" class="btn btn-danger">Delete</button>
                             </form>
                         </td>

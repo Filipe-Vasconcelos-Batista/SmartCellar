@@ -17,13 +17,13 @@ class Products
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $Barcode = null;
+    private ?int $barcode = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
+    private ?string $category = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $ingredients = null;
@@ -39,36 +39,36 @@ class Products
 
     public function getBarcode(): ?int
     {
-        return $this->Barcode;
+        return $this->barcode;
     }
 
-    public function setBarcode(int $Barcode): static
+    public function setBarcode(int $barcode): static
     {
-        $this->Barcode = $Barcode;
+        $this->barcode = $barcode;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getTitle(): ?string
     {
-        return $this->name;
+        return $this->title;
     }
 
-    public function setName(string $name): static
+    public function setTitle(string $title): static
     {
-        $this->name = $name;
+        $this->title = $title;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getCategory(): ?string
     {
-        return $this->description;
+        return $this->category;
     }
 
-    public function setDescription(?string $description): static
+    public function setCategory(?string $category): static
     {
-        $this->description = $description;
+        $this->category = $category;
 
         return $this;
     }

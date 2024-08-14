@@ -72,7 +72,7 @@ class InsertController extends AbstractController
         return $this->render('insert_photo/insertBarcode.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
-            'id'=>$id,
+            'id'=>['id'=>$id],
         ]);
     }
 }
