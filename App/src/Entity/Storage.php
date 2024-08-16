@@ -104,7 +104,7 @@ class Storage
                 $storageItem->setStorageId(null);
             }
         }
-
         return $this;
     }
+
 }

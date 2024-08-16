@@ -1,6 +1,5 @@
 <div>
-    dump(products)
-    {%  if productInfo is  empty %}
+    {%  if productInfo %}
         <div class="mb-3">
             <table class="table table-striped table-bordered">
                 <caption>Your list of products</caption>
@@ -34,7 +33,6 @@
             <form action="{{ path('app_finish',{'id':id.id}) }}" method="post">
                 <button >Lets finish this</button>
             </form>
-
         </div>
-{% endif %}
+    {% endif %}
 </div>

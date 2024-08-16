@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Storage;
+use App\Entity\StorageItems;
 use App\Entity\User;
 use App\Form\StorageType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +32,22 @@ class StorageController extends AbstractController
             if (!$storage->getUserId()->contains($user)) {
                 return $this->redirectToRoute('app_user_storages');
             }
-            $products=$storage->getStorageItems();
+            $storageItemsRepo = $entityManager->getRepository(StorageItems::class);
+            $storageItems = $storageItemsRepo->findBy(['storageId' =>$id]);
+            foreach ($storageItems as $storageItem){
+                $quantity=$storageItem->getQuantity();
+                $minQuantity=$storageItem->getMinQuantity();
+              foreach ($storageItem->getProductId() as $product){
+                  $products[$product->getId()]=[
+                      'id'=>$product->getId(),
+                      'barcode'=>$product->getBarcode(),
+                      "title"=>$product->getTitle(),
+                      'category'=>$product->getCategory(),
+                      'quantity'=>$quantity,
+                      'minQuantity'=>$minQuantity,
+                  ];
+              }
+            }
         }
             return $this->render('storage/storages.html.twig', [
                 'storages' => $storages,
