@@ -4,6 +4,7 @@
 {% block body %}
     <h1>{{ storage.name }}</h1>
 <a href="{{ path('app_insert_photo', {'id': storage.id|e}) }}" class="btn btn-success">add photo</a>
+<a href="{{ path('app_insert_barcode', {'id': storage.id|e}) }}" class="btn btn-success">add Barcode</a>
 
 
 <h1>{{ storage.id }}</h1>
@@ -17,7 +18,6 @@
                     <th scope="col">Barcode</th>
                     <th scope="col">Name</th>
                     <th scope="col">Category</th>
-                    <th scope="col">Manufacturer</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Delete</th>
                 </tr>
@@ -25,11 +25,10 @@
                 <tbody>
                 {% for product in products  %}
                     <tr>
-                        <td>{{ product.barcode }}</td>
-                        <td>{{ product.title }}</td>
-                        <td>{{ product.category }}</td>
-                        <td>{{ product.manufacturer }}</td>
-                        <td>{{ product.quantity }}</td>
+                        <td>{{ product.getBarcode() }}</td>
+                        <td>{{ product.getTitle() }}</td>
+                        <td>{{ product.getCategory() }}</td>
+                        <td>{{ product.getQuantity() }}</td>
                         <td>
                             <form action="{{ path('app_delete_entry',{'barcode': product.barcode}) }}" method="post">
                                 <button type="submit" class="btn btn-danger">Delete</button>

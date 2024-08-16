@@ -2,11 +2,16 @@
 
 namespace App\Controller;
 
+use App\Entity\Products;
+use App\Entity\Storage;
+use App\Entity\StorageItems;
 use App\Form\InsertBarcodeType;
 use App\Form\InsertPhotoType;
+use App\Form\ProductsType;
 use App\Message\BarcodeLookupMessage;
 use App\Message\UploadPhotoMessage;
 use App\Services\CacheService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +50,7 @@ class InsertController extends AbstractController
             }
         }
         $items = $this->cache->getCachedProductInfo("storage" . $id);
-        return $this->render('insert_photo/index.html.twig', [
+        return $this->render('insert/index.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
             'id'=>$id,
@@ -59,7 +64,6 @@ class InsertController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $barcode=(string) $form->get('barcode')->getData();
-            error_log("Barcode retrieved: " . $barcode);
             if (empty($barcode) || trim($barcode) === ''){
                 $this->addFlash('error','Barcode is empty.');
             }
@@ -69,10 +73,55 @@ class InsertController extends AbstractController
             }
         }
         $items = $this->cache->getCachedProductInfo("storage" . $id);
-        return $this->render('insert_photo/insertBarcode.html.twig', [
+        return $this->render('insert/insertBarcode.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
             'id'=>['id'=>$id],
         ]);
+    }
+    #[Route('/insert/final/{id}', name: 'app_finish')]
+    public function finish(Request $request, $id,EntityManagerInterface $entityManager, SessionInterface $session): Response
+    {
+
+        $items = $this->cache->getCachedProductInfo("storage" . $id);
+        foreach ($items as $item) {
+            if(!isset($item['id'])){
+                $product=new Products();
+                $form=$this->createForm(ProductsType::class);
+                $form->handleRequest($request);
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $product->setBarcode($item['barcode']);
+                    $product->setTitle($form->get('title')->getData());
+                    $product->setCategory($form->get('category')->getData());
+                    $entityManager->persist($product);
+                    $entityManager->flush();
+                    $item['title']=$product->getTitle();
+                    $item['id']=$product->getId();
+                    $item['category']=$product->getCategory();
+                    $this->cache->saveProductInfo('storage' . $id, $item);
+                }
+                return $this->render('insert/form_insert.html.twig', [
+                    'form' => $form,
+                    'item'=>$item,
+                ]);
+            }
+            else{
+
+                $product=$entityManager->getRepository(Products::class)->find($item['id']);
+                if($product){
+                    $storageId= $entityManager->getRepository(Storage::class)->find($id);
+                    $storageItem=new StorageItems();
+                    $storageItem->setStorageId($storageId);
+                    $storageItem->addProductId($product);
+                    $quantity=$storageItem->getQuantity();
+                    $storageItem->setQuantity($item['quantity'] + $quantity);
+                    $entityManager->persist($storageItem);
+                    $entityManager->flush();
+                }
+            }
+        }
+        $lastAccessedUrl = $session->get('last_accessed_url');
+
+        return $this->redirect($lastAccessedUrl);
     }
 }

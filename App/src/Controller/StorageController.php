@@ -61,17 +61,4 @@ class StorageController extends AbstractController
             'form' => $form,
         ]);
     }
-    public function loadStorage($id, EntityManagerInterface $entityManager, Storage $storage): Response{
-
-        $storage = $entityManager->getRepository(Storage::class)->find($id);
-        if(!$storage){
-            throw $this->createNotFoundException('Storage not found');
-        }
-        $products=$storage->getStorageItems();
-        return $this->render('storage/individualstorage.html.twig', [
-            'storages' => $storages,
-            'storage' => $storage,
-            'products' => $products,
-        ]);
-    }
 }

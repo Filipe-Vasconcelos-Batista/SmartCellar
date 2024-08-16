@@ -22,4 +22,10 @@ class DeleteController extends AbstractController
 
         return $this->redirect($lastAccessedUrl);
     }
+    #[Route('/delete', name: 'app_delete_entry')]
+    public function delete():Response
+    {
+        $this->cacheService->clearCache();
+        return $this->redirect('localhost:8080//insert/barcode/3');
+    }
 }

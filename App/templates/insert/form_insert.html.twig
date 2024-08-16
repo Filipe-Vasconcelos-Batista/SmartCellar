@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Check Data {% endblock %}
+
+{% block body %}
+    <h3>Barcode : {{ item.barcode }}</h3>
+    <h6>This barcode is not registered in our database would you kindly change that?</h6>
+    <div class="container">
+        <div class="container d-flex justify-content-center align-items-center" >
+            <div class="form-group">
+                {{ form_start(form) }}
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    {{ form_row(form.title, {
+                        id: 'title',
+                        required: true,
+                    }) }}
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    {{ form_row(form.category, {
+                        id: 'category',
+                        required: true,
+                    }) }}
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-success btn-lg" >    Save     </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

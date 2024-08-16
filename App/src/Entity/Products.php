@@ -17,7 +17,7 @@ class Products
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $barcode = null;
+    private ?string $barcode = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
@@ -29,7 +29,7 @@ class Products
     private ?string $ingredients = null;
 
     #[ORM\ManyToOne(inversedBy: 'productId')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?StorageItems $storageItems = null;
 
     public function getId(): ?int
@@ -37,12 +37,12 @@ class Products
         return $this->id;
     }
 
-    public function getBarcode(): ?int
+    public function getBarcode(): ?string
     {
         return $this->barcode;
     }
 
-    public function setBarcode(int $barcode): static
+    public function setBarcode(string $barcode): static
     {
         $this->barcode = $barcode;
 
