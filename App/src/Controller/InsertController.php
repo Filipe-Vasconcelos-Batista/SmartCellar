@@ -64,14 +64,9 @@ class InsertController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $barcode=(string) $form->get('barcode')->getData();
-            if (empty($barcode) || trim($barcode) === ''){
-                $this->addFlash('error','Barcode is empty.');
+            $this->messageBus->dispatch(new BarcodeLookupMessage($barcode,$id));
+            $this->addFlash('success', 'Barcode submitted and processing started.');
             }
-            else {
-                $this->messageBus->dispatch(new BarcodeLookupMessage($barcode,$id));
-                $this->addFlash('success', 'Barcode submitted and processing started.');
-            }
-        }
         $items = $this->cache->getCachedProductInfo("storage" . $id);
         return $this->render('insert/insertBarcode.html.twig', [
             'form' => $form,
@@ -106,7 +101,6 @@ class InsertController extends AbstractController
                 ]);
             }
             else{
-
                 $product=$entityManager->getRepository(Products::class)->find($item['id']);
                 if($product){
                     $storageId= $entityManager->getRepository(Storage::class)->find($id);

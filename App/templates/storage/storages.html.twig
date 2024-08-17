@@ -1,34 +1,34 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Your Storages{% endblock %}
 
 {% block body %}
-    <h3>Your Storages</h3>
-    {% if not storage %}
-        <p>Select a storage to view its products.</p>
-    {% endif %}
+<div class="container-fluid">
+    <div class="mb-3 text-center">
+        <h3><a href="{{ path('app_user_storages')}}">Your Storages</a></h3>
+        {% if not storage %}
+            <p>Select a storage to view its products.</p>
+        {% endif %}
+    </div>
     {% if(storages) %}
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    {% for storage in storages %}
-                         <a href="{{ path('app_user_storages', {'id':storage.id}) }}">{{ storage.name }}</a>/
-                    {% endfor %}
-                </li>
-            </ol>
-        </nav>
-    {% else %}
-        <h1>No Storages Found</h1>
-    {% endif %}
-    {% if not storage %}
-        <a href="{{ path('app_storage_create') }}"><button class="btn btn-success" type="button">Create a new Storage</button></a>
-    {% endif %}
+        <div class="text-center">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                {% for storage in storages %}
 
-
-    {% if(storage and products ) %}
-        {%  include 'storage/individualstorage.html.twig' %}
-    {% else %}
-    {% endif %}
-
-
+                <a class="navbar-brand" href="{{ path('app_user_storages', {'id':storage.id}) }}">{{ storage.name }}</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                {% endfor %}
+            </nav>
+            {% else %}
+                <h1>No Storages Found</h1>
+            {% endif %}
+            {% if not storage %}
+                <a href="{{ path('app_storage_create') }}"><button class="btn btn-success" type="button">Create a new Storage</button></a>
+            {% endif %}
+            {% if(storage ) %}
+                {%  include 'storage/individualstorage.html.twig' %}
+            {% endif %}
+        </div>
+</div>
 {% endblock %}

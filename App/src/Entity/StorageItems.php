@@ -106,23 +106,4 @@ class StorageItems
 
         return $this;
     }
-    /**
-     * Get an array of product details (including quantity and minQuantity).
-     *
-     * @return array
-     */
-    public function getProductDetails(): array
-    {
-        $productDetails = [];
-
-        foreach ($this->productId as $product) {
-            $productDetails[] = [
-                'product' => $product,
-                'quantity' => $product->getQuantity(),
-                'minQuantity' => $product->getMinQuantity(),
-            ];
-        }
-
-        return $productDetails;
-    }
 }

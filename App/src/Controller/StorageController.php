@@ -7,7 +7,6 @@ use App\Entity\StorageItems;
 use App\Entity\User;
 use App\Form\StorageType;
 use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,20 +33,7 @@ class StorageController extends AbstractController
             }
             $storageItemsRepo = $entityManager->getRepository(StorageItems::class);
             $storageItems = $storageItemsRepo->findBy(['storageId' =>$id]);
-            foreach ($storageItems as $storageItem){
-                $quantity=$storageItem->getQuantity();
-                $minQuantity=$storageItem->getMinQuantity();
-              foreach ($storageItem->getProductId() as $product){
-                  $products[$product->getId()]=[
-                      'id'=>$product->getId(),
-                      'barcode'=>$product->getBarcode(),
-                      "title"=>$product->getTitle(),
-                      'category'=>$product->getCategory(),
-                      'quantity'=>$quantity,
-                      'minQuantity'=>$minQuantity,
-                  ];
-              }
-            }
+            $products=$this->getStorageItems($storageItems);
         }
             return $this->render('storage/storages.html.twig', [
                 'storages' => $storages,
@@ -76,5 +62,24 @@ class StorageController extends AbstractController
         return $this->render('storage/index.html.twig', [
             'form' => $form,
         ]);
+    }
+    private function getStorageItems($storageItems):array
+    {
+        $products=[];
+        foreach ($storageItems as $storageItem){
+            $quantity=$storageItem->getQuantity();
+            $minQuantity=$storageItem->getMinQuantity();
+            foreach ($storageItem->getProductId() as $product){
+                $products[$product->getId()]=[
+                    'id'=>$product->getId(),
+                    'barcode'=>$product->getBarcode(),
+                    "title"=>$product->getTitle(),
+                    'category'=>$product->getCategory(),
+                    'quantity'=>$quantity,
+                    'minQuantity'=>$minQuantity,
+                ];
+            }
+        }
+        return $products;
     }
 }
