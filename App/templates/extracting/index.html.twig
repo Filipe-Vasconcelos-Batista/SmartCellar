@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Extract Barcode{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="container d-flex justify-content-center align-items-center" >
+            <div class="form-group">
+                {{ form_start(form) }}
+                <div class="mb-3">
+                    <label for="barcode" class="form-label">Barcode</label>
+                    {{ form_row(form.barcode, {
+                        id: 'barcode',
+                        required: true,
+                    }) }}
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-danger btn-lg" >    Extract     </button>
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
