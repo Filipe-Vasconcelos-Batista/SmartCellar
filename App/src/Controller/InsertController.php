@@ -5,11 +5,11 @@ namespace App\Controller;
 use App\Entity\Products;
 use App\Entity\Storage;
 use App\Entity\StorageItems;
-use App\Form\InsertBarcodeType;
-use App\Form\InsertPhotoType;
+use App\Form\BarcodeType;
+use App\Form\PhotoType;
 use App\Form\ProductsType;
-use App\Message\BarcodeLookupMessage;
-use App\Message\UploadPhotoMessage;
+use App\Message\BarcodeInsertMessage;
+use App\Message\PhotoInsertMessage;
 use App\Services\CacheService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +35,7 @@ class InsertController extends AbstractController
     public function index(Request $request,SessionInterface $session ,$id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_photo',['id' => $id]));
-        $form=$this->createForm(InsertPhotoType::class);
+        $form=$this->createForm(PhotoType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $imageData = $form->get('photo')->getData();
@@ -44,7 +44,7 @@ class InsertController extends AbstractController
                     $filename = md5(uniqid()) . '.' . $image->guessExtension();
                     $filePath = $this->getParameter('photos_directory') . '/' . $filename;
                     $image->move($this->getParameter('photos_directory'), $filename);
-                    $this->messageBus->dispatch(new UploadPhotoMessage($filePath,$id));
+                    $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
                     $this->addFlash('success','Photo submitted and processing started.');
                 }
             }
@@ -60,11 +60,11 @@ class InsertController extends AbstractController
     public function insertBarcode(Request $request,SessionInterface $session, $id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode',['id' => $id]));
-        $form=$this->createForm(InsertBarcodeType::class);
+        $form=$this->createForm(BarcodeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $barcode=(string) $form->get('barcode')->getData();
-            $this->messageBus->dispatch(new BarcodeLookupMessage($barcode,$id));
+            $this->messageBus->dispatch(new BarcodeInsertMessage($barcode,$id));
             $this->addFlash('success', 'Barcode submitted and processing started.');
             }
         $items = $this->cache->getCachedProductInfo("storage" . $id);

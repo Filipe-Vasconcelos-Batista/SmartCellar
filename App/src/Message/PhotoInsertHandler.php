@@ -11,7 +11,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 
 #[AsMessageHandler]
-class MessageHandler
+class PhotoInsertHandler
 {
     private BarcodeScanService $barcodeScanService;
     private ProductLookupService $productLookUpService;
@@ -24,7 +24,7 @@ class MessageHandler
         $this->cacheService = $cacheService;
         $this->entityManager = $entityManager;
     }
-    public function __invoke(UploadPhotoMessage $message )
+    public function __invoke(PhotoInsertMessage $message )
     {
         echo "Handler invoked\n";
         error_log("Handler invoked");

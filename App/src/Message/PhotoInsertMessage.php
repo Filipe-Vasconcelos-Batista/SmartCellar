@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-class UploadPhotoMessage
+class PhotoInsertMessage
 {
     private string $filePath;
     private int $id;

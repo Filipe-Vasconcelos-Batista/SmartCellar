@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-class BarcodeLookupMessage
+class BarcodeInsertMessage
 {
     private string $barcode;
     private int $id;

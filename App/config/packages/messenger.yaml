@@ -11,7 +11,9 @@ framework:
 
         routing:
             # Route your messages to the transports
-             'App\Message\UploadPhotoMessage': async
+             'App\Message\PhotoInsertMessage': async
+             'App\Message\BarcodeExtractMessage': async
+             'App\Message\BarcodeInsertMessage': async
 
 # when@test:
 #    framework:

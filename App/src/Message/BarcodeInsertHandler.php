@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class BarcodeLookupMessageHandler
+class BarcodeInsertHandler
 {
     private ProductLookupService $productLookupService;
     private CacheService $cacheService;
@@ -21,7 +21,7 @@ class BarcodeLookupMessageHandler
         $this->cacheService = $cacheService;
         $this->entityManager = $entityManager;
     }
-    public function __invoke(BarcodeLookupMessage $barcodeLookupMessage){
+    public function __invoke(BarcodeInsertMessage $barcodeLookupMessage){
         $barcode =$barcodeLookupMessage->getBarcode();
         $cacheKey = $barcodeLookupMessage->getId();
         $productInfo=$this->entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$barcode]);
