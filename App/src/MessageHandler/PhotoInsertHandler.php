@@ -29,26 +29,32 @@ class PhotoInsertHandler
     }
     public function __invoke(PhotoInsertMessage $message )
     {
+        echo "Handler invoked\n";
         $filepath = $message->getFilepath();
         $barcode = $this->barcodeScanService->getCode($filepath);
         $cacheKey = $message->getId();
-        $this->photosService->deletePhotos($filepath);
         if ($barcode) {
-            $newProductInfo=$this->entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$barcode]);
+            $newProductInfo=$this->entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$barcode[0]]);
             if(!$newProductInfo){
+                echo 'went here';
                 $newProductInfo = $this->productLookUpService->getProduct($barcode);
                 if ($newProductInfo) {
+                    echo 'whent also here';
                     $newProductInfo['barcode']=$barcode;
                     $this->cacheService->updateProductInfo($cacheKey, $newProductInfo);
                     return $cacheKey;
                 }
             }
             else{
-                $this->cacheService->updateProductInfo($cacheKey, (array)$newProductInfo);
+                $item=[];
+                $item['id']=$newProductInfo->getId();
+                $item['barcode']=$newProductInfo->getBarcode();
+                $item['title']=$newProductInfo->getTitle();
+                $item['category']=$newProductInfo->getCategory();
+                $this->cacheService->updateProductInfo($cacheKey,$item);
                 return $cacheKey;
             }
         }
         return null;
     }
-
 }

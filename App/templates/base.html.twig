@@ -27,11 +27,14 @@
                             <a class="nav-link btn btn-primary" href="{{ path('app_user_storages') }}">Storages</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link btn btn-danger" href="{{ path('app_delete_cache') }}">Clear</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link btn btn-danger" href="#">LogOut</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link btn btn-primary" href="{{path(' app_login ')}}">Login</a>
+                            <a class="nav-link btn btn-primary" href="{{path('app_login')}}">Login</a>
                         </li>
                     {% endif %}
                 </ul>

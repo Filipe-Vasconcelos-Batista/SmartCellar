@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Form\BarcodeType;
 use App\Form\PhotoType;
 use App\Message\BarcodeExtractMessage;
+use App\Message\PhotoExtractMessage;
 use App\Message\PhotoInsertMessage;
 use App\Services\CacheService;
 use App\Services\PhotosService;
@@ -37,7 +38,7 @@ class ExtractingController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $filePaths=$this->photosService->savePhotos($form);
             foreach ($filePaths as $filePath) {
-                $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
+                $this->messageBus->dispatch(new PhotoExtractMessage($filePath,$id));
             }
             $this->addFlash('success','Photo submitted and processing started.');
         }

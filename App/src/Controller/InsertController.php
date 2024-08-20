@@ -50,7 +50,7 @@ class InsertController extends AbstractController
         return $this->render('insert/index.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
-            'id'=>$id,
+            'id'=>['id'=>$id],
         ]);
     }
     #[Route('/insert/barcode/{id}', name: 'app_insert_barcode')]

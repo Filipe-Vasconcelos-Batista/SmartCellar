@@ -8,21 +8,21 @@ use GuzzleHttp\Client;
 
 class ApiBarcodeScanService
 {
+    private PhotosService $photosService;
     private String $apiKey;
-    public function __construct(){
+    public function __construct(PhotosService $photosService){
         $this->apiKey = $_ENV['API_KEY'];
         if (!$this->apiKey) {
             throw new \RuntimeException('API key not set') ;
         }
+        $this->photosService = $photosService;
     }
     public function getCode(string $filepath){
-        $config=Configuration::getDefaultConfiguration()->setApiKey('Apikey',$this->apiKey);
         $client=new Client();
-        $apiInstance=new BarcodeScanAPI($client, $config);
+        if (!file_exists($filepath)) {
+            throw new \RuntimeException("File not Found at: " .  $filepath);
+        }
         try{
-            if (!file_exists($filepath)) {
-                throw new \RuntimeException( $filepath);
-            }
             $response=$client->post('https://api.cloudmersive.com/barcode/scan/image',[
                 'headers'=>[
                     'Apikey'=> $this->apiKey,

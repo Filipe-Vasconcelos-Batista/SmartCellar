@@ -37,6 +37,7 @@ class CacheService
         foreach($existingProductInfo as &$product) {
             if (isset($product['barcode']) && $product['barcode'] === $barcode) {
                 $product['quantity'] = isset($product['quantity']) ? $product['quantity'] + 1 : 2;
+
                 $found = true;
                 break;
             }
@@ -66,5 +67,4 @@ class CacheService
 
         $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $updatedProductInfo);
     }
-
 }

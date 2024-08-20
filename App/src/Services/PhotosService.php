@@ -18,10 +18,4 @@ class PhotosService extends AbstractController
         }
         return $filePaths;
     }
-    public function deletePhotos($filePath): void
-    {
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
-        }
 }

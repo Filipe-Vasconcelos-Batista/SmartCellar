@@ -28,7 +28,6 @@ final class PhotoExtractMessageHandler
         $filepath = $message->getFilepath();
         $barcode = $this->barcodeScanService->getCode($filepath);
         if ($barcode) {
-            $this->photosService->deletePhotos($filepath);
             return $this->stockService->reduceStock($barcode,$storageId, 1);
         }
         else return false;
