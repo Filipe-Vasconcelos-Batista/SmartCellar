@@ -11,9 +11,9 @@ use App\Form\ProductsType;
 use App\Message\BarcodeInsertMessage;
 use App\Message\PhotoInsertMessage;
 use App\Services\CacheService;
+use App\Services\PhotosService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -24,11 +24,13 @@ class InsertController extends AbstractController
 {
     private MessageBusInterface $messageBus;
     private CacheService $cache;
+    private PhotosService $photosService;
 
 
-    public function __construct(MessageBusInterface $messageBus, CacheService $cache, Security $security){
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache,PhotosService $photosService){
         $this->messageBus=$messageBus;
         $this->cache = $cache;
+        $this->photosService = $photosService;
     }
 
     #[Route('/insert/photo/{id}', name: 'app_insert_photo')]
@@ -38,17 +40,12 @@ class InsertController extends AbstractController
         $form=$this->createForm(PhotoType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageData = $form->get('photo')->getData();
-            if ($imageData) {
-                foreach ($imageData as $image) {
-                    $filename = md5(uniqid()) . '.' . $image->guessExtension();
-                    $filePath = $this->getParameter('photos_directory') . '/' . $filename;
-                    $image->move($this->getParameter('photos_directory'), $filename);
-                    $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
+            $filePaths=$this->photosService->savePhotos($form);
+            foreach ($filePaths as $filePath) {
+                $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
+            }
                     $this->addFlash('success','Photo submitted and processing started.');
                 }
-            }
-        }
         $items = $this->cache->getCachedProductInfo("storage" . $id);
         return $this->render('insert/index.html.twig', [
             'form' => $form,
@@ -75,25 +72,15 @@ class InsertController extends AbstractController
         ]);
     }
     #[Route('/insert/final/{id}', name: 'app_finish')]
-    public function finish(Request $request, $id,EntityManagerInterface $entityManager, SessionInterface $session): Response
-    {
-
+    public function finish(Request $request, $id,EntityManagerInterface $entityManager, SessionInterface $session): Response{
         $items = $this->cache->getCachedProductInfo("storage" . $id);
         foreach ($items as $item) {
             if(!isset($item['id'])){
-                $product=new Products();
                 $form=$this->createForm(ProductsType::class);
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-                    $product->setBarcode($item['barcode']);
-                    $product->setTitle($form->get('title')->getData());
-                    $product->setCategory($form->get('category')->getData());
-                    $entityManager->persist($product);
-                    $entityManager->flush();
-                    $item['title']=$product->getTitle();
-                    $item['id']=$product->getId();
-                    $item['category']=$product->getCategory();
-                    $this->cache->saveProductInfo('storage' . $id, $item);
+                    $this->setProductInDatabase($entityManager,$id,$form,$item);
+                    return $this->redirectToRoute('app_finish');
                 }
                 return $this->render('insert/form_insert.html.twig', [
                     'form' => $form,
@@ -101,21 +88,37 @@ class InsertController extends AbstractController
                 ]);
             }
             else{
-                $product=$entityManager->getRepository(Products::class)->find($item['id']);
-                if($product){
-                    $storageId= $entityManager->getRepository(Storage::class)->find($id);
-                    $storageItem=new StorageItems();
-                    $storageItem->setStorageId($storageId);
-                    $storageItem->addProductId($product);
-                    $quantity=$storageItem->getQuantity();
-                    $storageItem->setQuantity($item['quantity'] + $quantity);
-                    $entityManager->persist($storageItem);
-                    $entityManager->flush();
-                }
+                $this->setProductInStorage($entityManager,$id,$item);
             }
         }
         $lastAccessedUrl = $session->get('last_accessed_url');
 
         return $this->redirect($lastAccessedUrl);
+    }
+
+    private function setProductInDatabase(EntityManagerInterface $entityManager,int $id,$form, Array $item):void{
+        $product=new Products();
+        $product->setBarcode($item['barcode']);
+        $product->setTitle($form->get('title')->getData());
+        $product->setCategory($form->get('category')->getData());
+        $entityManager->persist($product);
+        $entityManager->flush();
+        $item['title']=$product->getTitle();
+        $item['id']=$product->getId();
+        $item['category']=$product->getCategory();
+        $this->cache->saveProductInfo('storage' . $id, $item);
+    }
+    private function setProductInStorage(EntityManagerInterface $entityManager,int $id, Array $item):void{
+        $product=$entityManager->getRepository(Products::class)->find($item['id']);
+        if($product){
+            $storageId= $entityManager->getRepository(Storage::class)->find($id);
+            $storageItem=new StorageItems();
+            $storageItem->setStorageId($storageId);
+            $storageItem->addProductId($product);
+            $quantity=$storageItem->getQuantity();
+            $storageItem->setQuantity($item['quantity'] + $quantity);
+            $entityManager->persist($storageItem);
+            $entityManager->flush();
+        }
     }
 }

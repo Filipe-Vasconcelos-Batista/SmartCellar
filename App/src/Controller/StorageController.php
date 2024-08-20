@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Storage;
 use App\Entity\StorageItems;
-use App\Entity\User;
 use App\Form\StorageType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,15 +48,12 @@ class StorageController extends AbstractController
      $form->handleRequest($request);
      if ($form->isSubmitted() && $form->isValid()) {
          $user=$security->getUser();
-         if ($user instanceof User) {
-             $storage->addUserId($user);
-             $storage->setName($form->get('name')->getData());
-             $entityManager->persist($storage);
-             $entityManager->flush();
-             return $this->redirectToRoute('app_user_storages');
-         }else{
-             throw new \LogicException('The user is not of the expected type.');
-         }
+         $storage->addUserId($user);
+         $storage->setName($form->get('name')->getData());
+         $entityManager->persist($storage);
+         $entityManager->flush();
+         return $this->redirectToRoute('app_user_storages');
+
      }
         return $this->render('storage/index.html.twig', [
             'form' => $form,

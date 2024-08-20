@@ -2,19 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Products;
-use App\Entity\Storage;
-use App\Entity\StorageItems;
 use App\Form\BarcodeType;
 use App\Form\PhotoType;
-use App\Form\ProductsType;
 use App\Message\BarcodeExtractMessage;
-use App\Message\BarcodeInsertMessage;
 use App\Message\PhotoInsertMessage;
 use App\Services\CacheService;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Services\PhotosService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -25,11 +19,13 @@ class ExtractingController extends AbstractController
 {
     private MessageBusInterface $messageBus;
     private CacheService $cache;
+    private PhotosService $photosService;
 
 
-    public function __construct(MessageBusInterface $messageBus, CacheService $cache, Security $security){
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache, PhotosService $photosService){
         $this->messageBus=$messageBus;
         $this->cache = $cache;
+        $this->photosService = $photosService;
     }
 
     #[Route('/extract/photo/{id}', name: 'app_extract_photo')]
@@ -39,16 +35,11 @@ class ExtractingController extends AbstractController
         $form=$this->createForm(PhotoType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageData = $form->get('photo')->getData();
-            if ($imageData) {
-                foreach ($imageData as $image) {
-                    $filename = md5(uniqid()) . '.' . $image->guessExtension();
-                    $filePath = $this->getParameter('photos_directory') . '/' . $filename;
-                    $image->move($this->getParameter('photos_directory'), $filename);
-                    $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
-                    $this->addFlash('success','Photo submitted and processing started.');
-                }
+            $filePaths=$this->photosService->savePhotos($form);
+            foreach ($filePaths as $filePath) {
+                $this->messageBus->dispatch(new PhotoInsertMessage($filePath,$id));
             }
+            $this->addFlash('success','Photo submitted and processing started.');
         }
         $items = $this->cache->getCachedProductInfo("storage" . $id);
         return $this->render('insert/index.html.twig', [
@@ -78,4 +69,5 @@ class ExtractingController extends AbstractController
             'id'=>['id'=>$id],
         ]);
     }
+
 }
