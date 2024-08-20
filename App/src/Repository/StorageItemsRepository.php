@@ -27,6 +27,17 @@ class StorageItemsRepository extends ServiceEntityRepository
             ->setParameter('storageId', $storageId)
             ->getQuery()->getOneOrNullResult();
     }
+    public function findStorageItemByProductIdAndStorageId($productId, $storageId)
+    {
+        return $this->createQueryBuilder('st')
+            ->innerJoin('st.productId', 'p')
+            ->where('st.storageId = :storageId')
+            ->andWhere('p.id = :productId')
+            ->setParameter('productId', $productId)
+            ->setParameter('storageId', $storageId)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
 
     //    /**

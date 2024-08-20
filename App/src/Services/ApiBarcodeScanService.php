@@ -37,14 +37,12 @@ class ApiBarcodeScanService
             ]);
             $new= json_decode($response->getBody(), true);
             if (empty($new['RawText'])) {
+                $this->photosService->deletePhotos($filepath);
                 throw new \RuntimeException('No barcode returned');
             }
-
                 return $new['RawText'];
-
-
-
         }catch (\Exception $exception){
+            $this->photosService->deletePhotos($filepath);
             throw new \RuntimeException('Error during the barcode scan: ' . $exception->getMessage());
         }
     }

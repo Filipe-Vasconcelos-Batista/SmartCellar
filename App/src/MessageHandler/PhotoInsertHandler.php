@@ -34,15 +34,12 @@ class PhotoInsertHandler
         $barcode = $this->barcodeScanService->getCode($filepath);
         $cacheKey = $message->getId();
         if ($barcode) {
-            $newProductInfo=$this->entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$barcode[0]]);
+            $newProductInfo=$this->entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$barcode]);
             if(!$newProductInfo){
-                echo 'went here';
                 $newProductInfo = $this->productLookUpService->getProduct($barcode);
                 if ($newProductInfo) {
-                    echo 'whent also here';
                     $newProductInfo['barcode']=$barcode;
-                    $this->cacheService->updateProductInfo($cacheKey, $newProductInfo);
-                    return $cacheKey;
+                    $this->cacheService->updateProductQuantity($cacheKey, $newProductInfo);
                 }
             }
             else{
@@ -51,10 +48,10 @@ class PhotoInsertHandler
                 $item['barcode']=$newProductInfo->getBarcode();
                 $item['title']=$newProductInfo->getTitle();
                 $item['category']=$newProductInfo->getCategory();
-                $this->cacheService->updateProductInfo($cacheKey,$item);
-                return $cacheKey;
+                $this->cacheService->updateProductQuantity($cacheKey,$item);
             }
         }
+        $this->photosService->deletePhotos($filepath);
         return null;
     }
 }

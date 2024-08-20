@@ -10,6 +10,7 @@ use App\Form\PhotoType;
 use App\Form\ProductsType;
 use App\Message\BarcodeInsertMessage;
 use App\Message\PhotoInsertMessage;
+use App\Repository\StorageItemsRepository;
 use App\Services\CacheService;
 use App\Services\PhotosService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,12 +26,14 @@ class InsertController extends AbstractController
     private MessageBusInterface $messageBus;
     private CacheService $cache;
     private PhotosService $photosService;
+    private StorageItemsRepository $storageItemsRepository;
 
 
-    public function __construct(MessageBusInterface $messageBus, CacheService $cache,PhotosService $photosService){
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache,PhotosService $photosService,StorageItemsRepository $storageItemsRepository){
         $this->messageBus=$messageBus;
         $this->cache = $cache;
         $this->photosService = $photosService;
+        $this->storageItemsRepository = $storageItemsRepository;
     }
 
     #[Route('/insert/photo/{id}', name: 'app_insert_photo')]
@@ -80,7 +83,7 @@ class InsertController extends AbstractController
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                     $this->setProductInDatabase($entityManager,$id,$form,$item);
-                    return $this->redirectToRoute('app_finish');
+                    return $this->redirectToRoute('app_finish',['id' => $id]);
                 }
                 return $this->render('insert/form_insert.html.twig', [
                     'form' => $form,
@@ -92,11 +95,10 @@ class InsertController extends AbstractController
             }
         }
         $lastAccessedUrl = $session->get('last_accessed_url');
-
         return $this->redirect($lastAccessedUrl);
     }
 
-    private function setProductInDatabase(EntityManagerInterface $entityManager,int $id,$form, Array $item):void{
+    private function setProductInDatabase(EntityManagerInterface $entityManager,int $id,$form,array $item):void{
         $product=new Products();
         $product->setBarcode($item['barcode']);
         $product->setTitle($form->get('title')->getData());
@@ -106,19 +108,31 @@ class InsertController extends AbstractController
         $item['title']=$product->getTitle();
         $item['id']=$product->getId();
         $item['category']=$product->getCategory();
-        $this->cache->saveProductInfo('storage' . $id, $item);
+        $this->cache->updateProductInfo( $id, $item);
     }
     private function setProductInStorage(EntityManagerInterface $entityManager,int $id, Array $item):void{
-        $product=$entityManager->getRepository(Products::class)->find($item['id']);
-        if($product){
+        $product=$this->storageItemsRepository->findStorageItemByProductIdAndStorageId($item['id'],$id);
+        if(!$product){
+            $product=$entityManager->getRepository(Products::class)->find($item['id']);
             $storageId= $entityManager->getRepository(Storage::class)->find($id);
             $storageItem=new StorageItems();
             $storageItem->setStorageId($storageId);
             $storageItem->addProductId($product);
             $quantity=$storageItem->getQuantity();
-            $storageItem->setQuantity($item['quantity'] + $quantity);
+            $adjust=(int)$item['quantity'] + $quantity;
+            $storageItem->setQuantity($adjust);
             $entityManager->persist($storageItem);
             $entityManager->flush();
+            $this->cache->saveProductInfo('storage' . $id, $item);
+        }
+        else{
+            $product->setQuantity($product->getQuantity() + $item['quantity']);
+            $entityManager->persist($product);
+            $entityManager->flush();
+            $this->cache->saveProductInfo('storage' . $id, $item);
+
+
+
         }
     }
 }

@@ -30,7 +30,7 @@ class BarcodeInsertHandler
             $productInfo = $this->productLookupService->getProduct($barcode);
             if ($productInfo) {
                 $productInfo['barcode'] = $barcode;
-                $this->cacheService->updateProductInfo($cacheKey, $productInfo);
+                $this->cacheService->updateProductQuantity($cacheKey, $productInfo);
             }
         }else{
             $item=[];
@@ -38,7 +38,7 @@ class BarcodeInsertHandler
             $item['barcode']=$productInfo->getBarcode();
             $item['title']=$productInfo->getTitle();
             $item['category']=$productInfo->getCategory();
-            $this->cacheService->updateProductInfo($cacheKey,$item);
+            $this->cacheService->updateProductQuantity($cacheKey,$item);
         }
     }
 }

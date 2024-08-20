@@ -29,15 +29,15 @@ class CacheService
         $items->set($productInfo);
         $this->cache->save($items);
     }
-    public function updateProductInfo(string $cacheKey, array $newProductInfo):void
+    public function updateProductQuantity(string $cacheKey, array $newProductInfo):void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $barcode=$newProductInfo['barcode'];
         $found = false;
         foreach($existingProductInfo as &$product) {
             if (isset($product['barcode']) && $product['barcode'] === $barcode) {
+                $product=$newProductInfo;
                 $product['quantity'] = isset($product['quantity']) ? $product['quantity'] + 1 : 2;
-
                 $found = true;
                 break;
             }
@@ -48,11 +48,29 @@ class CacheService
         }
         $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
     }
+    public function updateProductInfo(string $cacheKey,array $newProductInfo):void
+    {
+        $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
+        $barcode = $newProductInfo['barcode'];
+        foreach ($existingProductInfo as &$product) {
+            if (isset($product['barcode']) && $product['barcode'] === $barcode) {
+                $product['id']=$newProductInfo['id'];
+                $product['title'] = $newProductInfo['title'];
+                $product['category'] = $newProductInfo['category'];
+            }
+        }
+        $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
+    }
+    public function deleteInfo(string $cacheKey): void
+    {
+        $this->cache->delete($cacheKey);
+    }
 
     public function clearCache(): void
     {
         $this->cache->clear();
     }
+
     public function deleteProductInfo(string $cacheKey, string $barcode): void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
