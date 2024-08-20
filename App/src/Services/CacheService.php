@@ -57,6 +57,7 @@ class CacheService
                 $product['id']=$newProductInfo['id'];
                 $product['title'] = $newProductInfo['title'];
                 $product['category'] = $newProductInfo['category'];
+                var_dump($product);
             }
         }
         $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
