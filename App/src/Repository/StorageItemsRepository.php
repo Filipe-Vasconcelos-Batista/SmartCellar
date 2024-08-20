@@ -20,8 +20,6 @@ class StorageItemsRepository extends ServiceEntityRepository
      */
     public function findStorageItemByBarcodeAndStorageId($barcode, $storageId){
         return $this->createQueryBuilder('st')
-            ->select('st')
-            ->from(StorageItems::class, 'st')
             ->innerJoin('st.productId', 'p')
             ->where('st.storageId = :storageId')
             ->andWhere('p.barcode = :barcode')

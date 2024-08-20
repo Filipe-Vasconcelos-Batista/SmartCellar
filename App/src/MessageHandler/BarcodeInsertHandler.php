@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Message;
+namespace App\MessageHandler;
 
 
 use App\Entity\Products;
+use App\Message\BarcodeInsertMessage;
 use App\Services\CacheService;
-use App\Services\ProductLookupService;
+use App\Services\ApiProductLookupService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
 class BarcodeInsertHandler
 {
-    private ProductLookupService $productLookupService;
+    private ApiProductLookupService $productLookupService;
     private CacheService $cacheService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ProductLookupService $productLookupService, CacheService $cacheService,EntityManagerInterface $entityManager){
+    public function __construct(ApiProductLookupService $productLookupService, CacheService $cacheService, EntityManagerInterface $entityManager){
         $this->productLookupService = $productLookupService;
         $this->cacheService = $cacheService;
         $this->entityManager = $entityManager;

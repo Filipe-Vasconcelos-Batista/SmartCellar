@@ -14,6 +14,7 @@ framework:
              'App\Message\PhotoInsertMessage': async
              'App\Message\BarcodeExtractMessage': async
              'App\Message\BarcodeInsertMessage': async
+             App\Message\PhotoExtractMessage: async
 
 # when@test:
 #    framework:

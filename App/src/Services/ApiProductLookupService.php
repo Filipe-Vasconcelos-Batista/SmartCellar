@@ -4,7 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 
-class ProductLookupService
+class ApiProductLookupService
 {
     private String $apiKeyLook;
     public function __construct(){

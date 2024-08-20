@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Message;
+namespace App\MessageHandler;
 use App\Entity\Products;
-use App\Services\BarcodeScanService;
+use App\Message\PhotoInsertMessage;
+use App\Services\ApiBarcodeScanService;
 use App\Services\CacheService;
-use App\Services\ProductLookupService;
+use App\Services\ApiProductLookupService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-
 
 
 #[AsMessageHandler]
 class PhotoInsertHandler
 {
-    private BarcodeScanService $barcodeScanService;
-    private ProductLookupService $productLookUpService;
+    private ApiBarcodeScanService $barcodeScanService;
+    private ApiProductLookupService $productLookUpService;
     private CacheService $cacheService;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(BarcodeScanService $barcodeScan, ProductLookupService $productLookupService, CacheService $cacheService, EntityManagerInterface $entityManager){
+    public function __construct(ApiBarcodeScanService $barcodeScan, ApiProductLookupService $productLookupService, CacheService $cacheService, EntityManagerInterface $entityManager){
         $this->barcodeScanService=$barcodeScan;
         $this->productLookUpService=$productLookupService;
         $this->cacheService = $cacheService;

@@ -6,7 +6,7 @@ use Swagger\Client\Api\BarcodeScanApi;
 use Swagger\Client\Configuration;
 use GuzzleHttp\Client;
 
-class BarcodeScanService
+class ApiBarcodeScanService
 {
     private String $apiKey;
     public function __construct(){
