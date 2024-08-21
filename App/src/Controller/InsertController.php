@@ -78,6 +78,10 @@ class InsertController extends AbstractController
     public function finish(Request $request, $id,EntityManagerInterface $entityManager, SessionInterface $session): Response{
         $items = $this->cache->getCachedProductInfo("storage" . $id);
         foreach ($items as $item) {
+            $product=$entityManager->getRepository(Products::class)->findOneBy(['barcode'=>$item['barcode']]);
+            if($product){
+                $item['id']=$product->getId();
+            }
             if(!isset($item['id'])){
                 $form=$this->createForm(ProductsType::class);
                 $form->handleRequest($request);

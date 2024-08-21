@@ -4,10 +4,7 @@
 {% block body %}
 <div class="container-fluid">
     <div class="mb-3 text-center">
-        <h3><a href="{{ path('app_user_storages')}}">Your Storages</a></h3>
-        {% if not storage %}
-            <p>Select a storage to view its products.</p>
-        {% endif %}
+        <h3>Your Storages</h3>
     </div>
     {% if(storages) %}
         <div class="text-center">
@@ -20,6 +17,9 @@
                 </button>
                 {% endfor %}
             </nav>
+            {% if not storage %}
+                <p>Select a storage to view its products.</p>
+            {% endif %}
             {% else %}
                 <h1>No Storages Found</h1>
             {% endif %}
