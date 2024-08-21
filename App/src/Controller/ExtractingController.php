@@ -46,7 +46,7 @@ class ExtractingController extends AbstractController
         return $this->render('insert/index.html.twig', [
             'form' => $form,
             'productInfo'=>$items,
-            'id'=>$id,
+            'id'=>['id'=>$id],
         ]);
     }
     #[Route('/extract/barcode/{id}', name: 'app_extract_barcode')]

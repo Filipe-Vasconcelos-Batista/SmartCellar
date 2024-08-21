@@ -3,6 +3,7 @@
 {% block title %}Check Data {% endblock %}
 
 {% block body %}
+    <a href="{{ path('app_user_storages',{'id':id.id}) }}"><button class="btn btn-primary">Return to storage</button></a>
     <h3>Barcode : {{ item.barcode }}</h3>
     <h6>This barcode is not registered in our database would you kindly change that?</h6>
     <div class="container">

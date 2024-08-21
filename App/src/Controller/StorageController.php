@@ -38,6 +38,7 @@ class StorageController extends AbstractController
                 'storages' => $storages,
                 'storage' => $storage,
                 'products' => $products,
+                'storageId'=>$id,
             ]);
     }
     #[Route('/storage/create', name: 'app_storage_create')]
@@ -59,7 +60,7 @@ class StorageController extends AbstractController
             'form' => $form,
         ]);
     }
-    private function getStorageItems($storageItems):array
+    public function getStorageItems($storageItems):array
     {
         $products=[];
         foreach ($storageItems as $storageItem){

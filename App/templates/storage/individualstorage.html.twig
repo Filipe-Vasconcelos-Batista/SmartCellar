@@ -26,7 +26,7 @@
                 <tbody>
                     {% for product in products  %}
                         <tr>
-                            <td><a href="{{path('app_product_page',{'id':product.id})}}">{{ product.barcode }}</a></td>
+                            <td><a href="{{path('app_product_page',{'productId':product.id,'storageId':storageId})}}">{{ product.barcode }}</a></td>
                             <td>{{ product.title }}</td>
                             <td>{{ product.category }}</td>
                             <td>{{ product.quantity }}</td>
