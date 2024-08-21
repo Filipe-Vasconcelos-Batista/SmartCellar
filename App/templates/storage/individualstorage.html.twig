@@ -2,6 +2,8 @@
 <div class="text-center">
         <h1>{{ storage.name }}</h1>
     <div class="mb-3">
+        <a href="{{ path('app_extract_photo', {'id': storage.id|e}) }}" class="btn btn-danger">Remove Photo</a>
+        <a href="{{ path('app_extract_barcode', {'id': storage.id|e}) }}" class="btn btn-danger">Remove Barcode</a>
         <a href="{{ path('app_insert_photo', {'id': storage.id|e}) }}" class="btn btn-success">Add Photo</a>
         <a href="{{ path('app_insert_barcode', {'id': storage.id|e}) }}" class="btn btn-success">Add Barcode</a>
     </div>
@@ -11,7 +13,7 @@
     {%  if products %}
         <div class="mb-3">
             <table class="table table-striped table-bordered">
-                <caption>Your list of products</caption>
+                <caption>Products inside of {{ storage.name }}</caption>
                 <thead>
                     <tr>
                         <th scope="col">Barcode</th>

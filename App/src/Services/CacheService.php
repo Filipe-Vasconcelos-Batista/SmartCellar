@@ -36,7 +36,6 @@ class CacheService
         $found = false;
         foreach($existingProductInfo as &$product) {
             if (isset($product['barcode']) && $product['barcode'] === $barcode) {
-                $product=$newProductInfo;
                 $product['quantity'] = isset($product['quantity']) ? $product['quantity'] + 1 : 2;
                 $found = true;
                 break;
@@ -52,15 +51,21 @@ class CacheService
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $barcode = $newProductInfo['barcode'];
+        $updatedProductInfo=[];
         foreach ($existingProductInfo as &$product) {
             if (isset($product['barcode']) && $product['barcode'] === $barcode) {
-                $product['id']=$newProductInfo['id'];
-                $product['title'] = $newProductInfo['title'];
-                $product['category'] = $newProductInfo['category'];
-                var_dump($product);
+                continue;
             }
+            $updatedProductInfo[] = $product;
         }
-        $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
+        $updatedProductInfo[]=[
+            'id'=>$newProductInfo['id'],
+            'quantity'=>$newProductInfo['quantity'],
+            'barcode'=>$newProductInfo['barcode'],
+            'title'=>$newProductInfo['title'],
+            'category'=>$newProductInfo['category'],
+        ];
+        $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $updatedProductInfo);
     }
     public function deleteInfo(string $cacheKey): void
     {

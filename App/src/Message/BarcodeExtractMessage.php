@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-final class BarcodeExtractMessage
+class BarcodeExtractMessage
 {
     private string $barcode;
     private int $id;

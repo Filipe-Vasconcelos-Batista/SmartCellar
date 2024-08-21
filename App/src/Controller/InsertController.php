@@ -92,6 +92,7 @@ class InsertController extends AbstractController
             }
             else{
                 $this->setProductInStorage($entityManager,$id,$item);
+                $this->cache->deleteProductInfo($id,$item['barcode']);
             }
         }
         $lastAccessedUrl = $session->get('last_accessed_url');
@@ -122,17 +123,14 @@ class InsertController extends AbstractController
             $adjust=(int)$item['quantity'] + $quantity;
             $storageItem->setQuantity($adjust);
             $entityManager->persist($storageItem);
-            $entityManager->flush();
-            $this->cache->saveProductInfo('storage' . $id, $item);
         }
         else{
             $product->setQuantity($product->getQuantity() + $item['quantity']);
             $entityManager->persist($product);
-            $entityManager->flush();
-            $this->cache->saveProductInfo('storage' . $id, $item);
-
 
 
         }
+        $entityManager->flush();
+        $this->cache->saveProductInfo($id, $item);
     }
 }

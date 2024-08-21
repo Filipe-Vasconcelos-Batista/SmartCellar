@@ -13,6 +13,7 @@
                     <label for="title" class="form-label">Title</label>
                     {{ form_row(form.title, {
                         id: 'title',
+                        value: item.title,
                         required: true,
                     }) }}
                 </div>
@@ -20,6 +21,7 @@
                     <label for="category" class="form-label">Category</label>
                     {{ form_row(form.category, {
                         id: 'category',
+                        value: item.category,
                         required: true,
                     }) }}
                 </div>

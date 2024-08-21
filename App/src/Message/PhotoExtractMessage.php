@@ -2,8 +2,9 @@
 
 namespace App\Message;
 
-final class PhotoExtractMessage
-{private string $filePath;
+class PhotoExtractMessage
+{
+    private string $filePath;
     private int $id;
     public function __construct(string $filePath, int $id){
         $this->filePath = $filePath;

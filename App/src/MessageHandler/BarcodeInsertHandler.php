@@ -30,6 +30,8 @@ class BarcodeInsertHandler
             $productInfo = $this->productLookupService->getProduct($barcode);
             if ($productInfo) {
                 $productInfo['barcode'] = $barcode;
+                $productInfo['title']='works';
+                $productInfo['category']='stuff';
                 $this->cacheService->updateProductQuantity($cacheKey, $productInfo);
             }
         }else{
