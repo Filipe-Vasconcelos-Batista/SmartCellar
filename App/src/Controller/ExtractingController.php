@@ -29,7 +29,7 @@ class ExtractingController extends AbstractController
     }
 
     #[Route('/extract/photo/{id}', name: 'app_extract_photo')]
-    public function index(Request $request, SessionInterface $session, $id): Response
+    public function index(Request $request, SessionInterface $session, int $id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_extract_photo', ['id' => $id]));
         $form = $this->createForm(PhotoType::class);
@@ -38,9 +38,13 @@ class ExtractingController extends AbstractController
             $imageData = $form->get('photo')->getData();
             $filePaths = $this->photosService->savePhotos($imageData);
             foreach ($filePaths as $filePath) {
-                $this->messageBus->dispatch(new PhotoExtractMessage($filePath, $id));
+                try {
+                    $this->addFlash('success', 'Photo submitted and processing started.');
+                    $this->messageBus->dispatch(new PhotoExtractMessage($filePath, $id));
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'An error ocurred.'.$e->getMessage());
+                }
             }
-            $this->addFlash('success', 'Photo submitted and processing started.');
         }
         $items = $this->cache->getCachedProductInfo('storage'.$id);
 
@@ -52,18 +56,18 @@ class ExtractingController extends AbstractController
     }
 
     #[Route('/extract/barcode/{id}', name: 'app_extract_barcode')]
-    public function extractBarcode(Request $request, SessionInterface $session, $id): Response
+    public function extractBarcode(Request $request, SessionInterface $session, int $id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_extract_barcode', ['id' => $id]));
         $form = $this->createForm(BarcodeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $barcode = (string) $form->get('barcode')->getData();
-            $result = $this->messageBus->dispatch(new BarcodeExtractMessage($barcode, $id));
-            if (false === $result) {
-                $this->addFlash('error', 'Barcode not found inside your storage.');
-            } else {
+            try {
+                $this->messageBus->dispatch(new BarcodeExtractMessage($barcode, $id));
                 $this->addFlash('success', 'Barcode submitted and processing started.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Barcode not found inside your storage.');
             }
         }
 

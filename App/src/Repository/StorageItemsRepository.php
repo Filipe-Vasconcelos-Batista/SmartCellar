@@ -19,7 +19,7 @@ class StorageItemsRepository extends ServiceEntityRepository
     /**
      * @return StorageItems Returns a single storageItem object using barcode and the StorageId
      */
-    public function findStorageItemByBarcodeAndStorageId($barcode, $storageId)
+    public function findStorageItemByBarcodeAndStorageId(string $barcode, int $storageId): ?StorageItems
     {
         return $this->createQueryBuilder('st')
             ->innerJoin('st.productId', 'p')
@@ -30,7 +30,7 @@ class StorageItemsRepository extends ServiceEntityRepository
             ->getQuery()->getOneOrNullResult();
     }
 
-    public function findStorageItemByProductIdAndStorageId($productId, $storageId)
+    public function findStorageItemByProductIdAndStorageId(int $productId, int $storageId): ?StorageItems
     {
         return $this->createQueryBuilder('st')
             ->innerJoin('st.productId', 'p')

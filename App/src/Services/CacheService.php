@@ -13,7 +13,7 @@ class CacheService
         $this->cache = $cache;
     }
 
-    private function getPrefixedCacheKey(string $cacheKey): string
+    private function getPrefixedCacheKey(int $cacheKey): string
     {
         return 'storage'.$cacheKey;
     }
@@ -33,7 +33,7 @@ class CacheService
         $this->cache->save($items);
     }
 
-    public function updateProductQuantity(string $cacheKey, array $newProductInfo): void
+    public function updateProductQuantity(int $cacheKey, array $newProductInfo): void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $barcode = $newProductInfo['barcode'];
@@ -52,7 +52,7 @@ class CacheService
         $this->saveProductInfo($this->getPrefixedCacheKey($cacheKey), $existingProductInfo);
     }
 
-    public function updateProductInfo(string $cacheKey, array $newProductInfo): void
+    public function updateProductInfo(int $cacheKey, array $newProductInfo): void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $barcode = $newProductInfo['barcode'];
@@ -83,7 +83,7 @@ class CacheService
         $this->cache->clear();
     }
 
-    public function deleteProductInfo(string $cacheKey, string $barcode): void
+    public function deleteProductInfo(int $cacheKey, string $barcode): void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));
         $updatedProductInfo = [];

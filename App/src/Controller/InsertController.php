@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -36,8 +37,11 @@ class InsertController extends AbstractController
         $this->storageItemsRepository = $storageItemsRepository;
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/insert/photo/{id}', name: 'app_insert_photo')]
-    public function index(Request $request, SessionInterface $session, $id): Response
+    public function index(Request $request, SessionInterface $session, int $id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_photo', ['id' => $id]));
         $form = $this->createForm(PhotoType::class);
@@ -45,6 +49,7 @@ class InsertController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $imageData = $form->get('photo')->getData();
             $filePaths = $this->photosService->savePhotos($imageData);
+
             foreach ($filePaths as $filePath) {
                 try {
                     $this->messageBus->dispatch(new PhotoInsertMessage($filePath, $id));
@@ -63,8 +68,11 @@ class InsertController extends AbstractController
         ]);
     }
 
+    /**
+     * @throws ExceptionInterface
+     */
     #[Route('/insert/barcode/{id}', name: 'app_insert_barcode')]
-    public function insertBarcode(Request $request, SessionInterface $session, $id): Response
+    public function insertBarcode(Request $request, SessionInterface $session, int $id): Response
     {
         $session->set('last_accessed_url', $this->generateUrl('app_insert_barcode', ['id' => $id]));
         $form = $this->createForm(BarcodeType::class);
@@ -88,7 +96,7 @@ class InsertController extends AbstractController
     }
 
     #[Route('/insert/final/{id}', name: 'app_finish')]
-    public function finish(Request $request, $id, EntityManagerInterface $entityManager, SessionInterface $session): Response
+    public function finish(Request $request, int $id, EntityManagerInterface $entityManager, SessionInterface $session): Response
     {
         $items = $this->cache->getCachedProductInfo('storage'.$id);
         foreach ($items as $item) {
@@ -108,7 +116,7 @@ class InsertController extends AbstractController
                 return $this->render('insert/form_insert.html.twig', [
                     'form' => $form,
                     'item' => $item,
-                    'id'=>['id'=>$id],
+                    'id' => ['id' => $id],
                 ]);
             } else {
                 $this->setProductInStorage($entityManager, $id, $item);
@@ -120,7 +128,7 @@ class InsertController extends AbstractController
         return $this->redirect($lastAccessedUrl);
     }
 
-    private function setProductInDatabase(EntityManagerInterface $entityManager, int $id, $form, array $item): void
+    private function setProductInDatabase(EntityManagerInterface $entityManager, int $id, object $form, array $item): void
     {
         $product = new Products();
         $product->setBarcode($item['barcode']);
@@ -134,6 +142,9 @@ class InsertController extends AbstractController
         $this->cache->updateProductInfo($id, $item);
     }
 
+    /**
+     * @param array[] $item
+     */
     private function setProductInStorage(EntityManagerInterface $entityManager, int $id, array $item): void
     {
         $product = $this->storageItemsRepository->findStorageItemByProductIdAndStorageId($item['id'], $id);
@@ -152,6 +163,5 @@ class InsertController extends AbstractController
             $entityManager->persist($product);
         }
         $entityManager->flush();
-        $this->cache->saveProductInfo($id, $item);
     }
 }

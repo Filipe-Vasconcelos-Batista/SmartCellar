@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Storage;
 use App\Entity\StorageItems;
 use App\Form\StorageType;
-use App\Repository\StorageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -16,12 +15,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class StorageController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function home(StorageRepository $storageRepository): Response
+    public function home(): Response
     {
         return $this->redirectToRoute('app_user_storages');
     }
+
     #[Route('/user/storage/{id?}', name: 'app_user_storages')]
-    public function index(Security $security, $id = null, EntityManagerInterface $entityManager): Response
+    public function index(Security $security, EntityManagerInterface $entityManager, ?int $id = null): Response
     {
         $user = $security->getUser();
         $storages = $user->getStorages();
@@ -69,7 +69,7 @@ class StorageController extends AbstractController
         ]);
     }
 
-    private function getStorageItems($storageItems): array
+    private function getStorageItems(array $storageItems): array
     {
         $products = [];
         foreach ($storageItems as $storageItem) {
@@ -86,6 +86,7 @@ class StorageController extends AbstractController
                 ];
             }
         }
+
         return $products;
     }
 }

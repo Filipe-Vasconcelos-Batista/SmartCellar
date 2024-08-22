@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PhotosService extends AbstractController
 {

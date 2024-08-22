@@ -29,9 +29,8 @@ class PhotoInsertHandler
         $this->photosService = $photosService;
     }
 
-    public function __invoke(PhotoInsertMessage $message)
+    public function __invoke(PhotoInsertMessage $message): void
     {
-        echo "Handler invoked\n";
         $filepath = $message->getFilepath();
         $barcode = $this->barcodeScanService->getCode($filepath);
         $cacheKey = $message->getId();
@@ -53,7 +52,5 @@ class PhotoInsertHandler
             }
         }
         $this->photosService->deletePhotos($filepath);
-
-        return null;
     }
 }

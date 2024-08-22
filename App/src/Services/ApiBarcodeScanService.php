@@ -18,7 +18,7 @@ class ApiBarcodeScanService
         $this->photosService = $photosService;
     }
 
-    public function getCode(string $filepath)
+    public function getCode(string $filepath): string
     {
         $client = new Client();
         if (!file_exists($filepath)) {

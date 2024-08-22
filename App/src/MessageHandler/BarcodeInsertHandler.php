@@ -23,7 +23,7 @@ class BarcodeInsertHandler
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(BarcodeInsertMessage $barcodeLookupMessage)
+    public function __invoke(BarcodeInsertMessage $barcodeLookupMessage): void
     {
         $barcode = $barcodeLookupMessage->getBarcode();
         $cacheKey = $barcodeLookupMessage->getId();

@@ -22,16 +22,12 @@ class PhotoExtractMessageHandler
         $this->photosService = $photosService;
     }
 
-    public function __invoke(PhotoExtractMessage $message):void
+    public function __invoke(PhotoExtractMessage $message): void
     {
         $storageId = $message->getId();
         $filePath = $message->getFilepath();
         $barcode = $this->barcodeScanService->getCode($filePath);
         $this->photosService->deletePhotos($filePath);
-        if ($barcode) {
-             $this->stockService->reduceStock($barcode, $storageId, 1);
-        } else {
-            throw new \Exception('Barcode not found');
-        }
+        $this->stockService->reduceStock($barcode, $storageId, 1);
     }
 }
