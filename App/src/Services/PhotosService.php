@@ -3,25 +3,27 @@
 namespace App\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class PhotosService extends AbstractController
 {
-    public function savePhotos($form):array
+    public function savePhotos(array $imageData): array
     {
-        $filePaths=[];
-        $imageData = $form->get('photo')->getData();
+        $filePaths = [];
         foreach ($imageData as $image) {
-                $filename = md5(uniqid()) . '.' . $image->guessExtension();
-                $filePath = $this->getParameter('photos_directory') . '/' . $filename;
-                $image->move($this->getParameter('photos_directory'), $filename);
-                $filePaths[] = $filePath;
+            $filename = md5(uniqid()).'.'.$image->guessExtension();
+            $filePath = $this->getParameter('photos_directory').'/'.$filename;
+            $image->move($this->getParameter('photos_directory'), $filename);
+            $filePaths[] = $filePath;
         }
+
         return $filePaths;
     }
-    public function deletePhotos($filePath): void
+
+    public function deletePhotos(string $filePath): void
     {
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+        if (file_exists($filePath)) {
+            unlink($filePath);
         }
+    }
 }

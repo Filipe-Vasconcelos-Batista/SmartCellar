@@ -4,7 +4,6 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,13 +13,13 @@ class PhotoType extends AbstractType
     {
         $builder
             ->add('photo', FileType::class, [
-            'label'=>false,
-            'mapped' => false,
-            'multiple'=>true,
-            'attr' => [
-                'class'=>'form-control-file btn btn-success',
-                'accept' => 'image/*',
-                'style' => 'display:none;',
+                'label' => false,
+                'mapped' => false,
+                'multiple' => true,
+                'attr' => [
+                    'class' => 'form-control-file btn btn-success',
+                    'accept' => 'image/*',
+                    'style' => 'display:none;',
                 ],
             ]);
     }

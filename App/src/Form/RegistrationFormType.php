@@ -18,30 +18,30 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('username',null,[
-                'label'=>false,
-            'constraints' => [
-            new NotBlank([
-                'message' => 'Please enter a username',
-            ]),
-        ],
-                'attr'=>[
-                    'class'=>'form-control',
-                ]
-                ])
+            ->add('username', null, [
+                'label' => false,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Please enter a username',
+                    ]),
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                ],
+            ])
             ->add('email', EmailType::class, [
-                'label'=>false,
+                'label' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a valid Email.',
                     ]),
                 ],
-                'attr'=>[
-                    'class'=>'form-control',
-    ]
+                'attr' => [
+                    'class' => 'form-control',
+                ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
-                                'mapped' => false,
+                'mapped' => false,
                 'constraints' => [
                     new IsTrue([
                         'message' => 'You should agree to our terms.',
@@ -49,12 +49,12 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
-                                // instead of being set onto the object directly,
+                // instead of being set onto the object directly,
                 // this is read and encoded in the controller
-                'label'=>false,
+                'label' => false,
                 'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password',
-                            'class'=>'form-control',],
+                    'class' => 'form-control', ],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a password',
@@ -66,7 +66,6 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
-
             ])
         ;
     }

@@ -12,13 +12,13 @@ class BarcodeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-        ->add('barcode',TextType::class,[
-                'label'=>false,
-                'mapped' => false,
-                'attr' => [
-                    'class'=>'form-control',
-                    ]
-            ])
+        ->add('barcode', TextType::class, [
+            'label' => false,
+            'mapped' => false,
+            'attr' => [
+                'class' => 'form-control',
+            ],
+        ])
         ;
     }
 

@@ -20,17 +20,15 @@
                         <th scope="col">Name</th>
                         <th scope="col">Category</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Min Quantity</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for product in products  %}
                         <tr>
-                            <td><a href="{{path('app_product_page',{'productId':product.id,'storageId':storageId})}}">{{ product.barcode }}</a></td>
+                            <td>{{ product.barcode }}</td>
                             <td>{{ product.title }}</td>
                             <td>{{ product.category }}</td>
                             <td>{{ product.quantity }}</td>
-                            <td>{{ product.minQuantity }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -15,10 +15,12 @@ class StorageItemsRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, StorageItems::class);
     }
+
     /**
      * @return StorageItems Returns a single storageItem object using barcode and the StorageId
      */
-    public function findStorageItemByBarcodeAndStorageId($barcode, $storageId){
+    public function findStorageItemByBarcodeAndStorageId($barcode, $storageId)
+    {
         return $this->createQueryBuilder('st')
             ->innerJoin('st.productId', 'p')
             ->where('st.storageId = :storageId')
@@ -27,6 +29,7 @@ class StorageItemsRepository extends ServiceEntityRepository
             ->setParameter('storageId', $storageId)
             ->getQuery()->getOneOrNullResult();
     }
+
     public function findStorageItemByProductIdAndStorageId($productId, $storageId)
     {
         return $this->createQueryBuilder('st')
@@ -38,7 +41,6 @@ class StorageItemsRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-
 
     //    /**
     //     * @return StorageItems[] Returns an array of StorageItems objects

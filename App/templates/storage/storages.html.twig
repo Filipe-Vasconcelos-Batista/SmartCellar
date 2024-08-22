@@ -6,23 +6,23 @@
     <div class="mb-3 text-center">
         <h3>Your Storages</h3>
     </div>
-    {% if(storages) %}
-        <div class="text-center">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="text-center">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            {% if storages|length > 0 %}
                 {% for storage in storages %}
-
-                <a class="navbar-brand" href="{{ path('app_user_storages', {'id':storage.id}) }}">{{ storage.name }}</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                    <a class="navbar-brand" href="{{ path('app_user_storages', {'id':storage.id}) }}">{{ storage.name }}</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                 {% endfor %}
-            </nav>
-            {% if not storage %}
-                <p>Select a storage to view its products.</p>
-            {% endif %}
             {% else %}
                 <h1>No Storages Found</h1>
             {% endif %}
+        </nav>
+            {% if not storage %}
+                <p>Select a storage to view its products.</p>
+            {% endif %}
+
             {% if not storage %}
                 <a href="{{ path('app_storage_create') }}"><button class="btn btn-success" type="button">Create a new Storage</button></a>
             {% endif %}

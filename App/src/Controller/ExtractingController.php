@@ -6,7 +6,6 @@ use App\Form\BarcodeType;
 use App\Form\PhotoType;
 use App\Message\BarcodeExtractMessage;
 use App\Message\PhotoExtractMessage;
-use App\Message\PhotoInsertMessage;
 use App\Services\CacheService;
 use App\Services\PhotosService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,53 +21,55 @@ class ExtractingController extends AbstractController
     private CacheService $cache;
     private PhotosService $photosService;
 
-
-    public function __construct(MessageBusInterface $messageBus, CacheService $cache, PhotosService $photosService){
-        $this->messageBus=$messageBus;
+    public function __construct(MessageBusInterface $messageBus, CacheService $cache, PhotosService $photosService)
+    {
+        $this->messageBus = $messageBus;
         $this->cache = $cache;
         $this->photosService = $photosService;
     }
 
     #[Route('/extract/photo/{id}', name: 'app_extract_photo')]
-    public function index(Request $request,SessionInterface $session ,$id): Response
+    public function index(Request $request, SessionInterface $session, $id): Response
     {
-        $session->set('last_accessed_url', $this->generateUrl('app_extract_photo',['id' => $id]));
-        $form=$this->createForm(PhotoType::class);
+        $session->set('last_accessed_url', $this->generateUrl('app_extract_photo', ['id' => $id]));
+        $form = $this->createForm(PhotoType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $filePaths=$this->photosService->savePhotos($form);
+            $imageData = $form->get('photo')->getData();
+            $filePaths = $this->photosService->savePhotos($imageData);
             foreach ($filePaths as $filePath) {
-                $this->messageBus->dispatch(new PhotoExtractMessage($filePath,$id));
+                $this->messageBus->dispatch(new PhotoExtractMessage($filePath, $id));
             }
-            $this->addFlash('success','Photo submitted and processing started.');
+            $this->addFlash('success', 'Photo submitted and processing started.');
         }
-        $items = $this->cache->getCachedProductInfo("storage" . $id);
+        $items = $this->cache->getCachedProductInfo('storage'.$id);
+
         return $this->render('insert/index.html.twig', [
             'form' => $form,
-            'productInfo'=>$items,
-            'id'=>['id'=>$id],
-        ]);
-    }
-    #[Route('/extract/barcode/{id}', name: 'app_extract_barcode')]
-    public function insertBarcode(Request $request,SessionInterface $session, $id): Response
-    {
-        $session->set('last_accessed_url', $this->generateUrl('app_extract_barcode',['id' => $id]));
-        $form=$this->createForm(BarcodeType::class);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $barcode=(string) $form->get('barcode')->getData();
-            $result=$this->messageBus->dispatch(new BarcodeExtractMessage($barcode,$id));
-            if($result===false){
-                $this->addFlash('error','Barcode not found inside your storage.');
-            }
-            else{
-                $this->addFlash('success','Barcode submitted and processing started.');
-            }
-        }
-        return $this->render('extracting/index.html.twig', [
-            'form' => $form,
-            'id'=>['id'=>$id],
+            'productInfo' => $items,
+            'id' => ['id' => $id],
         ]);
     }
 
+    #[Route('/extract/barcode/{id}', name: 'app_extract_barcode')]
+    public function extractBarcode(Request $request, SessionInterface $session, $id): Response
+    {
+        $session->set('last_accessed_url', $this->generateUrl('app_extract_barcode', ['id' => $id]));
+        $form = $this->createForm(BarcodeType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $barcode = (string) $form->get('barcode')->getData();
+            $result = $this->messageBus->dispatch(new BarcodeExtractMessage($barcode, $id));
+            if (false === $result) {
+                $this->addFlash('error', 'Barcode not found inside your storage.');
+            } else {
+                $this->addFlash('success', 'Barcode submitted and processing started.');
+            }
+        }
+
+        return $this->render('extracting/index.html.twig', [
+            'form' => $form,
+            'id' => ['id' => $id],
+        ]);
+    }
 }
