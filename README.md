@@ -1,7 +1,6 @@
-# SmartCellar
+# Welcome to SmartCellar
 
-# Welcome to My Event Management App
-
+SmartCellar is a web app currently in development that aims to help people manage their inventory, whether its a small or large storage space/s.
 This project was created for the Turing College specialization sprint in PHP. It is the fourth project in the series.
 
 ## Part 0 - Setup
@@ -50,6 +49,8 @@ storage and you’ll be redirected to the create storage page. Here you’ll onl
 - `name`: You can give it any name you want at this point, as there are no limitations for this right now.
 
 Once you have chosen the name, you can press the submit button.
+
+Every User can have as many storage as they want.
 
 ## Part 4 - Add Your Products
 
