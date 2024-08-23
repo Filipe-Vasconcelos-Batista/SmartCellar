@@ -16,6 +16,9 @@ class StockService
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function reduceStock(string $barcode, int $storageId, int $number): void
     {
         $storageItem = $this->storageItemsRepository->findStorageItemByBarcodeAndStorageId($barcode, $storageId);
@@ -30,12 +33,12 @@ class StockService
         $this->entityManager->flush();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function addStock(string $barcode, int $storageId, int $number): void
     {
         $storageItem = $this->storageItemsRepository->findStorageItemByBarcodeAndStorageId($barcode, $storageId);
-        if (null === $storageItem) {
-            throw new \Exception("Nothing found for barcode $barcode to reduce");
-        }
         $currentQuantity = $storageItem->getQuantity();
         $newQuantity = max(0, $currentQuantity + $number);
         $storageItem->setQuantity($newQuantity);

@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -42,13 +43,13 @@ class ExtractingController extends AbstractController
                     $this->addFlash('success', 'Photo submitted and processing started.');
                     $this->messageBus->dispatch(new PhotoExtractMessage($filePath, $id));
                 } catch (\Exception $e) {
-                    $this->addFlash('error', 'An error ocurred.'.$e->getMessage());
+                    $this->addFlash('error', 'An error ocurred.' . $e->getMessage());
                 }
             }
         }
-        $items = $this->cache->getCachedProductInfo('storage'.$id);
+        $items = $this->cache->getCachedProductInfo('storage' . $id);
 
-        return $this->render('insert/index.html.twig', [
+        return $this->render('extracting/photo.html.twig', [
             'form' => $form,
             'productInfo' => $items,
             'id' => ['id' => $id],
@@ -62,12 +63,13 @@ class ExtractingController extends AbstractController
         $form = $this->createForm(BarcodeType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $barcode = (string) $form->get('barcode')->getData();
+            $barcode = (string)$form->get('barcode')->getData();
             try {
                 $this->messageBus->dispatch(new BarcodeExtractMessage($barcode, $id));
                 $this->addFlash('success', 'Barcode submitted and processing started.');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Barcode not found inside your storage.');
+            } catch (HandlerFailedException $e) {
+                $nestedException = $e->getPrevious();
+                $this->addFlash('error', $nestedException ? $nestedException->getMessage() : 'An error occurred');
             }
         }
 

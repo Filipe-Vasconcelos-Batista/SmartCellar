@@ -48,7 +48,7 @@ class StorageController extends AbstractController
         ]);
     }
 
-    #[Route('/storage/create', name: 'app_storage_create')]
+    #[Route('/storage/create', name: 'app_storage_create',)]
     public function createStorage(Request $request, EntityManagerInterface $entityManager, Security $security): Response
     {
         $storage = new Storage();
