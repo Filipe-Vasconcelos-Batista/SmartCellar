@@ -32,7 +32,7 @@ class CacheService
         $items->set($productInfo);
         $this->cache->save($items);
     }
-
+    //use products in here man
     public function updateProductQuantity(int $cacheKey, array $newProductInfo): void
     {
         $existingProductInfo = $this->getCachedProductInfo($this->getPrefixedCacheKey($cacheKey));

@@ -10,3 +10,8 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 COPY . /var/www/html
 COPY my-httpd.conf /etc/apache2/sites-available/
 RUN a2enmod rewrite
+
+WORKDIR /var/www/html
+
+CMD ["sh", "-c", "php bin/console make:migration || true && php bin/console doctrine:migrations:migrate || true && php bin/console messenger:consume async & apache2-foreground"]
+

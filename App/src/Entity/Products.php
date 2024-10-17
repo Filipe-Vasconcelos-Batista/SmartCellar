@@ -7,6 +7,8 @@ use App\Repository\ProductsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
+//change to singular
 #[ApiResource()]
 #[ORM\Entity(repositoryClass: ProductsRepository::class)]
 class Products

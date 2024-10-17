@@ -30,7 +30,6 @@ class DeleteController extends AbstractController
     public function delete(): Response
     {
         $this->cacheService->clearCache();
-
         return $this->redirect('http://localhost:8080/user/storage');
     }
 }

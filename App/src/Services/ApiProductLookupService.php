@@ -22,6 +22,7 @@ class ApiProductLookupService
 
             $data = json_decode($response->getBody(), true);
 
+            //create a object to resolve this
             return [
                 'title' => $data['products'][0]['title'],
                 'category' => $data['products'][0]['category'],
